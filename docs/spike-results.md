@@ -49,3 +49,23 @@ A public deployment now ignores and hides every memory labelled `real` (`publicV
 ## Rate limit and recorded run (2026-10-30)
 - Per-visitor limits: check 10/min, send 5/min, decide 10/min, memories 20/min (HTTP 429 with `retry-after`). Verified on a local production build: 20 allowed, then 429. The counter is per server instance, so on serverless it is best-effort.
 - `/app` now has a recorded run built from `fixtures/replay.json` (real data from the integration test). `runReplay` re-runs the real engine over it, and `tests/replay.test.ts` checks every recorded verdict and similarity, including the 0.70 seen live.
+
+## 2026-10-30 Mainnet memory run (12 writes)
+
+Written with `scripts/seed-mainnet.ts --label=real --write` through the mainnet relayer, signed by the delegate key. Recall returned 12/12, 0 unreadable.
+Label `real` was chosen by the account owner. The reasons were drafted by the assistant as example decisions (not typed by the owner while deciding a live send); disclose this in the README and submission.
+
+| id | blob id |
+|---|---|
+| mainnet-01 | ybIaw2ZXRsEHcJzWvBna-j3K7fsfcGoJL7uo0IBcf0Y |
+| mainnet-02 | OxQbNb0UJ3v82LocWUumD7R9TYxt7L5x0dXQpV9-acI |
+| mainnet-03 | HvvyYDikARil0S5U81hnYKAFvMzs1ntCRNnqiq9Wnyw |
+| mainnet-04 | a42nGp1RgdLv5bSYX0rs_Uk0IZ48d0vgoVDH0kqczSA |
+| mainnet-05 | CDidQc6C3sjZXXlur2UYScztwEYUxlZRNKo1YPsmG_E |
+| mainnet-06 | orq4vy9PmWXemMcyKiVKpEWWvStfOQ9dEVObGbjVpBw |
+| mainnet-07 | MbJSvApnqBAena960rT0uOUk5EysaEunKcW0dNAS4Yw |
+| mainnet-08 | jDJMFl5P_v-ss4-D31qrW_kGt2xxpRbtDHdL1Kfcv94 |
+| mainnet-09 | ktRPVNYOr4HcuoUWPSAF6uErNa-YKHvajyWTcBXyZCw |
+| mainnet-10 | qZCafu7p7nMGTvpmeBBeHcBt6AxgiDL0Oz6WynDse7I |
+| mainnet-11 | I9PI0ts-e3CVv2XV2FIGX2-DlpKefRkYSs5ZlWr_RYk |
+| mainnet-12 | WokGBWkO1fQuz17MkscRPUOHbPLMhqifca1-IABhlas (delete of mainnet-04) |
