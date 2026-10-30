@@ -42,3 +42,6 @@ Production at https://said-no.vercel.app (Node 26 runtime, region bom1), env: `N
 - Saving and sending are refused on the public deployment (`/api/decide` and `/api/send` return the "off on this deployment" errors).
 - Public `/api/check` took 4.7-5.6 s (calls are paced to stay under 3 rps, plus the Memory recall).
 - KNOWN RISK: `/api/memories` and the matches inside `/api/check` expose the stored decisions, including typed reasons, to anyone. See the privacy note in the hackathon notes.
+
+## Privacy fix (2026-10-30)
+A public deployment now ignores and hides every memory labelled `real` (`publicView`, on in production unless `EXPOSE_PRIVATE=true`). `/api/memories` returns only non-real entries plus a count; `/api/check` and `/api/send` compute verdicts from non-real entries only, so no typed reason, recipient or blob id of a real memory can appear. Verified end to end against a local production build: with one real ("TOP-SECRET") and one demo decision saved, a stranger saw only the demo entry, the real count (1), and no secret text anywhere in either route.

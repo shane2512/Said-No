@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { executeSend } from "@/lib/chain";
 import { getRuntime } from "@/lib/runtime";
-import { checkSend, executeAllowed, sendGate } from "@/lib/service";
+import { checkSend, executeAllowed, publicView, sendGate } from "@/lib/service";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     // Re-check on the server: the browser's earlier verdict is not trusted.
     const check = await checkSend(
       { sender: rt.address, recipient, amount },
-      { source: rt.source, mem: rt.mem, hour: () => hour ?? new Date().getUTCHours() },
+      { source: rt.source, mem: rt.mem, hour: () => hour ?? new Date().getUTCHours(), publicView: publicView(process.env) },
     );
     const gate = sendGate({ level: check.verdict.level, amount, acknowledged, executeOn, dryRunOk: check.facts?.dryRunOk ?? false });
     if (!gate.ok) return Response.json({ error: gate.reason, level: check.verdict.level }, { status: gate.status });

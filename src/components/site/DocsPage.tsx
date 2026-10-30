@@ -83,7 +83,7 @@ export default function DocsPage() {
                 <tr><td><code>POST /api/check</code></td><td>Verdict, chain facts, request log. Sends nothing.</td><td><code>recipient, amount, hour?</code></td></tr>
                 <tr><td><code>POST /api/decide</code></td><td>Saves a decision. Returns a job, about 25 s on Walrus.</td><td><code>action, recipient, amount, reason, kind, features, source?, target?</code></td></tr>
                 <tr><td><code>GET /api/jobs/:id</code></td><td>Blob id once saved; 202 until then</td><td>None</td></tr>
-                <tr><td><code>GET /api/memories</code></td><td>Recalled decisions and the count of unreadable ones</td><td>None</td></tr>
+                <tr><td><code>GET /api/memories</code></td><td>Recalled decisions, the count of unreadable ones, and the real count. Real entries are hidden on a public deployment.</td><td>None</td></tr>
                 <tr><td><code>POST /api/send</code></td><td>Re-checks on the server, then executes. Needs <code>ALLOW_EXECUTE=true</code>, 0.1 SUI maximum.</td><td><code>recipient, amount, acknowledged, hour?</code></td></tr>
               </tbody>
             </table>
@@ -109,6 +109,7 @@ node scripts/dev-local.mjs 3201   # local memory: nothing leaves the machine`}</
               <li>It does not detect scams or say a transaction is unsafe. A label is your opinion, not an accusation.</li>
               <li>A denied send has no transaction. The proof is the memory blob, not a digest.</li>
               <li>Memories are Seal-encrypted by the relayer, which also decrypts them server-side. This is not zero-trust.</li>
+              <li>A public deployment never shows or uses entries labelled real: it ignores them and reports only a count. Set <code>EXPOSE_PRIVATE=true</code> on a private deployment to see and use them.</li>
               <li>Delegate keys are account-wide and can read and write. Authorise only agents you trust.</li>
               <li>Transaction history starts at the node&apos;s earliest available data, so it may be incomplete.</li>
               <li>Demo data is labelled. Only memories marked real count toward the hackathon&apos;s requirement.</li>

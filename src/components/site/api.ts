@@ -7,6 +7,7 @@ export type Status = {
   sender: string;
   executeOn: boolean;
   writesOn: boolean;
+  publicView: boolean;
   maxSend: number;
 };
 

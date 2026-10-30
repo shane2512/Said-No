@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { getRuntime } from "@/lib/runtime";
-import { checkSend } from "@/lib/service";
+import { checkSend, publicView } from "@/lib/service";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const rt = getRuntime();
     const result = await checkSend(
       { sender: rt.address, recipient, amount },
-      { source: rt.source, mem: rt.mem, hour: () => hour ?? new Date().getUTCHours() },
+      { source: rt.source, mem: rt.mem, hour: () => hour ?? new Date().getUTCHours(), publicView: publicView(process.env) },
     );
     return Response.json({ network: rt.network, memory: rt.memory, sender: rt.address, ...result });
   } catch (e) {

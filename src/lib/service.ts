@@ -7,7 +7,21 @@ import type { Decision, Features, Level, Verdict } from "./types";
 const ORDER: Level[] = ["normal", "reminder", "reflection", "hold"];
 const atLeast = (level: Level, min: Level): Level => (ORDER.indexOf(level) >= ORDER.indexOf(min) ? level : min);
 
-export type CheckDeps = { source: ChainSource; mem: MemLike; hour: () => number; timing?: Timing };
+export type CheckDeps = { source: ChainSource; mem: MemLike; hour: () => number; timing?: Timing; publicView?: boolean };
+
+/**
+ * A public deployment must not reveal the owner's real decisions (typed reasons, recipients, blob ids).
+ * On by default in production; EXPOSE_PRIVATE=true turns it off for a private deployment.
+ */
+export const publicView = (env: Record<string, string | undefined>) =>
+  env.NODE_ENV === "production" && env.EXPOSE_PRIVATE !== "true";
+
+/** Drops every real record when public. Returns only a count of what was hidden. */
+export function visibleDecisions(all: Decision[], isPublic: boolean): { decisions: Decision[]; hiddenReal: number } {
+  if (!isPublic) return { decisions: all, hiddenReal: 0 };
+  const decisions = all.filter((d) => d.source !== "real");
+  return { decisions, hiddenReal: all.length - decisions.length };
+}
 
 export type CheckResult = {
   verdict: Verdict;
@@ -32,7 +46,7 @@ export async function checkSend(
   let memoryOk = true;
   try {
     const loaded = await loadDecisions({ mem: deps.mem });
-    decisions = loaded.decisions;
+    decisions = visibleDecisions(loaded.decisions, deps.publicView ?? false).decisions;
     ignoredMemories = loaded.ignored;
   } catch {
     memoryOk = false;

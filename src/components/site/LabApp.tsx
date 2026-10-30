@@ -16,6 +16,7 @@ export default function LabApp() {
   const [status, setStatus] = useState<Status | null>(null);
   const [items, setItems] = useState<Decision[] | null>(null);
   const [ignored, setIgnored] = useState(0);
+  const [realCount, setRealCount] = useState(0);
   const [loadErr, setLoadErr] = useState(false);
   const [busy, setBusy] = useState("");
   const [msg, setMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
@@ -27,6 +28,7 @@ export default function LabApp() {
     setLoadErr(false);
     setItems([...data.decisions].sort((a: Decision, b: Decision) => b.ts - a.ts));
     setIgnored(data.ignored);
+    setRealCount(data.realCount ?? 0);
   }, []);
 
   useEffect(() => { getStatus().then(setStatus); load(); }, [load]);
@@ -59,7 +61,6 @@ export default function LabApp() {
   const rows = (items ?? []).filter((d) => d.action !== "delete");
   const live = rows.filter((d) => !deleted.has(d.id));
   const nDeny = live.filter((d) => d.action === "deny").length;
-  const nReal = (items ?? []).filter((d) => d.source === "real").length;
   const canWrite = status?.writesOn !== false;
   const isLocal = status?.memory === "local";
 
@@ -98,7 +99,7 @@ export default function LabApp() {
         <div style={{ gridColumn: "span 3", position: "relative", zIndex: 3 }}>
           <div className="tiles">
             <div className="ntile">Active refusals<Display text={String(nDeny)} reveal={false} /></div>
-            <div className="ntile">Real memories, 10 needed<Display text={String(nReal)} reveal={false} /></div>
+            <div className="ntile">{status?.publicView ? "Real memories, kept private" : "Real memories, 10 needed"}<Display text={String(realCount)} reveal={false} /></div>
             <div className="ntile">Unreadable, ignored<Display text={String(ignored)} reveal={false} /></div>
           </div>
 
