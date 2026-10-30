@@ -42,23 +42,23 @@ Built for the Tatum x Walrus Memory "Total Recall" hackathon. Tracks: Consumer F
 
 | id | action | blob id |
 |---|---|---|
-| mainnet-01 | deny | `ybIaw2ZXRsEHcJzWvBna-j3K7fsfcGoJL7uo0IBcf0Y` |
-| mainnet-02 | deny | `OxQbNb0UJ3v82LocWUumD7R9TYxt7L5x0dXQpV9-acI` |
-| mainnet-03 | deny | `HvvyYDikARil0S5U81hnYKAFvMzs1ntCRNnqiq9Wnyw` |
-| mainnet-04 | deny | `a42nGp1RgdLv5bSYX0rs_Uk0IZ48d0vgoVDH0kqczSA` |
-| mainnet-05 | deny (hard) | `CDidQc6C3sjZXXlur2UYScztwEYUxlZRNKo1YPsmG_E` |
-| mainnet-06 | deny | `orq4vy9PmWXemMcyKiVKpEWWvStfOQ9dEVObGbjVpBw` |
-| mainnet-07 | approve | `MbJSvApnqBAena960rT0uOUk5EysaEunKcW0dNAS4Yw` |
-| mainnet-08 | override | `jDJMFl5P_v-ss4-D31qrW_kGt2xxpRbtDHdL1Kfcv94` |
-| mainnet-09 | approve | `ktRPVNYOr4HcuoUWPSAF6uErNa-YKHvajyWTcBXyZCw` |
-| mainnet-10 | deny | `qZCafu7p7nMGTvpmeBBeHcBt6AxgiDL0Oz6WynDse7I` |
-| mainnet-11 | deny | `I9PI0ts-e3CVv2XV2FIGX2-DlpKefRkYSs5ZlWr_RYk` |
-| mainnet-12 | delete of mainnet-04 | `WokGBWkO1fQuz17MkscRPUOHbPLMhqifca1-IABhlas` |
+| mainnet-01 | deny | [`ybIaw2ZXRsEHcJzWvBna-j3K7fsfcGoJL7uo0IBcf0Y`](https://walruscan.com/mainnet/blob/ybIaw2ZXRsEHcJzWvBna-j3K7fsfcGoJL7uo0IBcf0Y) |
+| mainnet-02 | deny | [`OxQbNb0UJ3v82LocWUumD7R9TYxt7L5x0dXQpV9-acI`](https://walruscan.com/mainnet/blob/OxQbNb0UJ3v82LocWUumD7R9TYxt7L5x0dXQpV9-acI) |
+| mainnet-03 | deny | [`HvvyYDikARil0S5U81hnYKAFvMzs1ntCRNnqiq9Wnyw`](https://walruscan.com/mainnet/blob/HvvyYDikARil0S5U81hnYKAFvMzs1ntCRNnqiq9Wnyw) |
+| mainnet-04 | deny | [`a42nGp1RgdLv5bSYX0rs_Uk0IZ48d0vgoVDH0kqczSA`](https://walruscan.com/mainnet/blob/a42nGp1RgdLv5bSYX0rs_Uk0IZ48d0vgoVDH0kqczSA) |
+| mainnet-05 | deny (hard) | [`CDidQc6C3sjZXXlur2UYScztwEYUxlZRNKo1YPsmG_E`](https://walruscan.com/mainnet/blob/CDidQc6C3sjZXXlur2UYScztwEYUxlZRNKo1YPsmG_E) |
+| mainnet-06 | deny | [`orq4vy9PmWXemMcyKiVKpEWWvStfOQ9dEVObGbjVpBw`](https://walruscan.com/mainnet/blob/orq4vy9PmWXemMcyKiVKpEWWvStfOQ9dEVObGbjVpBw) |
+| mainnet-07 | approve | [`MbJSvApnqBAena960rT0uOUk5EysaEunKcW0dNAS4Yw`](https://walruscan.com/mainnet/blob/MbJSvApnqBAena960rT0uOUk5EysaEunKcW0dNAS4Yw) |
+| mainnet-08 | override | [`jDJMFl5P_v-ss4-D31qrW_kGt2xxpRbtDHdL1Kfcv94`](https://walruscan.com/mainnet/blob/jDJMFl5P_v-ss4-D31qrW_kGt2xxpRbtDHdL1Kfcv94) |
+| mainnet-09 | approve | [`ktRPVNYOr4HcuoUWPSAF6uErNa-YKHvajyWTcBXyZCw`](https://walruscan.com/mainnet/blob/ktRPVNYOr4HcuoUWPSAF6uErNa-YKHvajyWTcBXyZCw) |
+| mainnet-10 | deny | [`qZCafu7p7nMGTvpmeBBeHcBt6AxgiDL0Oz6WynDse7I`](https://walruscan.com/mainnet/blob/qZCafu7p7nMGTvpmeBBeHcBt6AxgiDL0Oz6WynDse7I) |
+| mainnet-11 | deny | [`I9PI0ts-e3CVv2XV2FIGX2-DlpKefRkYSs5ZlWr_RYk`](https://walruscan.com/mainnet/blob/I9PI0ts-e3CVv2XV2FIGX2-DlpKefRkYSs5ZlWr_RYk) |
+| mainnet-12 | delete of mainnet-04 | [`WokGBWkO1fQuz17MkscRPUOHbPLMhqifca1-IABhlas`](https://walruscan.com/mainnet/blob/WokGBWkO1fQuz17MkscRPUOHbPLMhqifca1-IABhlas) |
 
 ## Honesty notes
 
 - **These 12 entries are example decisions drafted with an AI assistant**, not reasons typed while deciding a live send. They are labelled `real` at the account owner's choice, so the public site hides them by design; the table above is the proof. Their script is [`scripts/seed-mainnet.ts`](scripts/seed-mainnet.ts) and the text is in [`src/lib/seed-data.ts`](src/lib/seed-data.ts).
-- The recorded run on `/app` is one genuine end-to-end run: a memory saved to Walrus (label `demo`, blob `eutRS0w3RLXgPFFuGHPK5BcsCzr_Vs7PDP7PUaLQV0k`) and a 0.01 SUI testnet send through Tatum (digest `BB3vxaoX2AsfnoeDoHkddFZ6emrmTXi1XHDDubxXq1Po`). The page re-runs the engine over the recorded inputs; it does not replay stored verdicts.
+- The recorded run on `/app` is one genuine end-to-end run: a memory saved to Walrus (label `demo`, blob [`eutRS0w3RLXgPFFuGHPK5BcsCzr_Vs7PDP7PUaLQV0k`](https://walruscan.com/mainnet/blob/eutRS0w3RLXgPFFuGHPK5BcsCzr_Vs7PDP7PUaLQV0k)) and a 0.01 SUI testnet send through Tatum (digest `BB3vxaoX2AsfnoeDoHkddFZ6emrmTXi1XHDDubxXq1Po`). The page re-runs the engine over the recorded inputs; it does not replay stored verdicts.
 - The check page has a **testnet / mainnet toggle** for the Tatum reads (balance, history, dry run). Sending is testnet-only and off on the public site. Memory always uses Walrus's mainnet relayer (the staging relayer is down), so the same memories apply on either chain.
 - Sui JSON-RPC is decommissioned, so Tatum is used through its native gRPC gateway. Free-plan limit is 3 requests/second; calls are paced and retried.
 - Memory recall is semantic only, so each decision is stored as a sentence plus a JSON line and matched in code.
