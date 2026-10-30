@@ -26,6 +26,11 @@ describe("deriveFeatures", () => {
     expect(f.amountRatio).toBe(0.5);
   });
 
+  it("uses a neutral ratio of 1 when there is no sending history to compare against", () => {
+    const f = deriveFeatures({ amount: 5, medianAmount: 0, hour: 9, priorTxCount: 0, priorToRecipient: 0 });
+    expect(f.amountRatio).toBe(1);
+  });
+
   it("does not produce Infinity or NaN when the median is zero", () => {
     const f = deriveFeatures({
       amount: 5,
