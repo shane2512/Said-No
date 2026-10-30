@@ -47,7 +47,11 @@ export async function checkSend(
     priorToRecipient: available ? facts.priorToRecipient : 0,
   });
 
-  const verdict = evaluate(features, input.recipient, decisions);
+  // Stored ratios are frozen at save time and the user's usual size moves on, so compare real
+  // amounts by putting the send and every past decision on one baseline.
+  const baseline = available && facts.medianAmount > 0 ? facts.medianAmount : 1;
+  const rebased = decisions.map((d) => ({ ...d, features: { ...d.features, amountRatio: d.amount / baseline } }));
+  const verdict = evaluate({ ...features, amountRatio: input.amount / baseline }, input.recipient, rebased);
   const extra: string[] = [];
   if (!available) extra.push(`Tatum check unavailable: ${facts.reason}`);
   if (!memoryOk) extra.push("memory unavailable: could not read your past decisions");

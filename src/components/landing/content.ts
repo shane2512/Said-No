@@ -1,5 +1,5 @@
 // Every number below comes from docs/spike-results.md or the test suite. Examples are labelled as demo data.
-export const TESTS = "55";
+export const TESTS = "58";
 
 export const NAV = [
   { href: "#how", label: "How it works", id: "how" },

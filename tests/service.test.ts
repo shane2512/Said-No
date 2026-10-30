@@ -71,6 +71,33 @@ describe("checkSend", () => {
   });
 });
 
+describe("checkSend amount comparison", () => {
+  // Saved before any history existed, so its stored ratio is the neutral 1, not its real size.
+  const frozen: Decision = { ...denial(9), amount: 0.5, features: { ...feat, amountRatio: 1, hour: 14 } };
+  const small = source({ listOutgoing: async () => [{ recipient: "0xother", amount: 0.01, ts: 1 }] });
+  const run = (amount: number) =>
+    checkSend({ ...input, amount }, { source: small, mem: memWith([frozen]), hour: () => 14, timing });
+
+  it("compares real amounts, not ratios frozen when the decision was saved", async () => {
+    const same = await run(0.5);
+    const tiny = await run(0.01);
+    expect(same.verdict.matches[0].similarity).toBeCloseTo(1, 5);
+    expect(tiny.verdict.matches[0].similarity).toBeLessThan(same.verdict.matches[0].similarity);
+  });
+
+  it("still reports the send's own ratio against the user's usual size", async () => {
+    expect((await run(0.5)).features.amountRatio).toBeCloseTo(50, 5);
+  });
+
+  it("tells amounts apart even before any history exists", async () => {
+    const empty = source({ listOutgoing: async () => [] });
+    const go = (amount: number) =>
+      checkSend({ ...input, amount }, { source: empty, mem: memWith([frozen]), hour: () => 14, timing });
+    expect((await go(0.5)).verdict.matches[0].similarity).toBeCloseTo(1, 5);
+    expect((await go(0.01)).verdict.matches[0].similarity).toBeLessThan(0.75);
+  });
+});
+
 describe("recordDecision", () => {
   it("saves a denial with a generated id and returns a pending job", async () => {
     const r = await recordDecision(

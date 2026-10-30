@@ -12,6 +12,12 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["scripts/dev-local.mjs", "3201"],
       "port": 3201
+    },
+    {
+      "name": "said-no-testnet-send",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["scripts/dev-testnet-send.mjs", "3202"],
+      "port": 3202
     }
   ]
 }
