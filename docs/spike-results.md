@@ -34,3 +34,11 @@ Server: real Walrus Memory on the mainnet relayer, Tatum on testnet, sending ena
 - History then read it back: median 0.01 SUI, 1 prior send, recipient known, balance reduced.
 - Bug found and fixed: stored ratios were frozen at save time, so a later 0.5 SUI send scored 0.70 against a 0.5 SUI denial while 0.01 SUI scored 1.00. Amounts are now compared on one baseline at check time.
 - Not exercised: the Deny form and the Proceed button on `/app` against real Memory (each writes more memories). Those paths ran against the local backend only.
+
+## Vercel deployment (2026-10-30): PASS
+Production at https://said-no.vercel.app (Node 26 runtime, region bom1), env: `NETWORK=testnet`, `ALLOW_EXECUTE=false`, `ALLOW_WRITES=false`.
+- **Native gRPC to Tatum works from Vercel serverless**: `/api/check` returned live balance, outgoing history and a dry-run (calls 17-97 ms) and recalled the stored Walrus memory. The Fly/Docker fallback is not needed.
+- Public pages `/`, `/app`, `/lab`, `/docs` return 200; unknown paths 404.
+- Saving and sending are refused on the public deployment (`/api/decide` and `/api/send` return the "off on this deployment" errors).
+- Public `/api/check` took 4.7-5.6 s (calls are paced to stay under 3 rps, plus the Memory recall).
+- KNOWN RISK: `/api/memories` and the matches inside `/api/check` expose the stored decisions, including typed reasons, to anyone. See the privacy note in the hackathon notes.
