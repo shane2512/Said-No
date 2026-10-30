@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Corners, Display } from "../landing/Display";
 import { blobUrl, getStatus, LEVELS, postJson, short, waitForBlob, when, type CheckResponse, type Decision, type Status } from "./api";
+import RecordedRun from "./RecordedRun";
 import Shell from "./Shell";
 
 const SCENARIOS = [
@@ -188,7 +189,7 @@ export default function CheckApp() {
               {LEVELS.map((l) => <div key={l.id} className={v?.level === l.id ? "on" : undefined} aria-current={v?.level === l.id ? "step" : undefined}>{l.label}</div>)}
             </div>
 
-            {!res && !checkErr && !busy && <p className="v-idle">Enter a send, or pick one on the left. Nothing is sent until you approve it.</p>}
+            {!res && !checkErr && !busy && <p className="v-idle">Enter a send, or pick one on the left. Nothing is sent until you approve it.{status?.writesOn === false && <> Saving is off here, so <a href="#recorded" style={{ color: "var(--orange)", textDecoration: "underline" }}>watch the recorded run</a> to see a refusal change a decision.</>}</p>}
             {busy && <p className="v-idle"><i className="pending" />Reading the chain through Tatum and recalling your memory…</p>}
             {checkErr && <p className="v-head warn" role="alert">{checkErr}</p>}
 
@@ -304,6 +305,7 @@ score ${v.score.toFixed(2)} · counted evidence with a stated prior, not machine
           )}
         </div>
       </div>
+      <RecordedRun />
     </Shell>
   );
 }

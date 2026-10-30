@@ -2,8 +2,11 @@ import { z } from "zod";
 import { getRuntime } from "@/lib/runtime";
 import { checkSend, publicView } from "@/lib/service";
 
+import { createLimiter, limited } from "@/lib/ratelimit";
+
 export const runtime = "nodejs";
 export const maxDuration = 60;
+const checkLimit = createLimiter({ limit: 10, windowMs: 60_000 });
 
 const body = z.object({
   recipient: z.string().regex(/^0x[0-9a-fA-F]{1,64}$/),
@@ -12,6 +15,8 @@ const body = z.object({
 });
 
 export async function POST(req: Request) {
+  const tooMany = limited(checkLimit, req);
+  if (tooMany) return tooMany;
   const parsed = body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: "invalid input" }, { status: 400 });
   const { recipient, amount, hour } = parsed.data;

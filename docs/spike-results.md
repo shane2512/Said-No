@@ -45,3 +45,7 @@ Production at https://said-no.vercel.app (Node 26 runtime, region bom1), env: `N
 
 ## Privacy fix (2026-10-30)
 A public deployment now ignores and hides every memory labelled `real` (`publicView`, on in production unless `EXPOSE_PRIVATE=true`). `/api/memories` returns only non-real entries plus a count; `/api/check` and `/api/send` compute verdicts from non-real entries only, so no typed reason, recipient or blob id of a real memory can appear. Verified end to end against a local production build: with one real ("TOP-SECRET") and one demo decision saved, a stranger saw only the demo entry, the real count (1), and no secret text anywhere in either route.
+
+## Rate limit and recorded run (2026-10-30)
+- Per-visitor limits: check 10/min, send 5/min, decide 10/min, memories 20/min (HTTP 429 with `retry-after`). Verified on a local production build: 20 allowed, then 429. The counter is per server instance, so on serverless it is best-effort.
+- `/app` now has a recorded run built from `fixtures/replay.json` (real data from the integration test). `runReplay` re-runs the real engine over it, and `tests/replay.test.ts` checks every recorded verdict and similarity, including the 0.70 seen live.

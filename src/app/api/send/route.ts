@@ -3,8 +3,11 @@ import { executeSend } from "@/lib/chain";
 import { getRuntime } from "@/lib/runtime";
 import { checkSend, executeAllowed, publicView, sendGate } from "@/lib/service";
 
+import { createLimiter, limited } from "@/lib/ratelimit";
+
 export const runtime = "nodejs";
 export const maxDuration = 60;
+const sendLimit = createLimiter({ limit: 5, windowMs: 60_000 });
 
 const body = z.object({
   recipient: z.string().regex(/^0x[0-9a-fA-F]{1,64}$/),
@@ -14,6 +17,8 @@ const body = z.object({
 });
 
 export async function POST(req: Request) {
+  const tooMany = limited(sendLimit, req);
+  if (tooMany) return tooMany;
   const executeOn = executeAllowed(process.env);
   if (!executeOn) return Response.json({ error: "Execution is off on this deployment." }, { status: 403 });
   const parsed = body.safeParse(await req.json().catch(() => null));

@@ -111,6 +111,8 @@ node scripts/dev-local.mjs 3201   # local memory: nothing leaves the machine`}</
               <li>Memories are Seal-encrypted by the relayer, which also decrypts them server-side. This is not zero-trust.</li>
               <li>A public deployment never shows or uses entries labelled real: it ignores them and reports only a count. Set <code>EXPOSE_PRIVATE=true</code> on a private deployment to see and use them.</li>
               <li>Delegate keys are account-wide and can read and write. Authorise only agents you trust.</li>
+              <li>Requests are rate limited per visitor (for example 10 checks a minute). The counter lives in one server instance, so on serverless hosting it slows a single visitor but is not a hard global cap.</li>
+              <li>The recorded run on the check page is a recording of one real session, not a live demo. Its verdicts are re-computed by the real engine on every page load, so it cannot drift from the code.</li>
               <li>Transaction history starts at the node&apos;s earliest available data, so it may be incomplete.</li>
               <li>Demo data is labelled. Only memories marked real count toward the hackathon&apos;s requirement.</li>
             </ul>

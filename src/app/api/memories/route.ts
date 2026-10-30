@@ -2,10 +2,15 @@ import { loadDecisions } from "@/lib/memory";
 import { getRuntime } from "@/lib/runtime";
 import { publicView, visibleDecisions } from "@/lib/service";
 
+import { createLimiter, limited } from "@/lib/ratelimit";
+
 export const runtime = "nodejs";
 export const maxDuration = 60;
+const memLimit = createLimiter({ limit: 20, windowMs: 60_000 });
 
-export async function GET() {
+export async function GET(req: Request) {
+  const tooMany = limited(memLimit, req);
+  if (tooMany) return tooMany;
   try {
     const { decisions, ignored } = await loadDecisions({ mem: getRuntime().mem });
     // Public deployments never return real records; they only report how many exist.

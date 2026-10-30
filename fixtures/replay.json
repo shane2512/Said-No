@@ -1,0 +1,60 @@
+{
+  "recordedOn": "2026-10-30",
+  "note": "Recorded from the real run in docs/spike-results.md: Tatum Sui testnet, Walrus Memory via the mainnet relayer. The saved memory is labelled demo.",
+  "recipient": "0xabababababababababababababababababababababababababababababababab",
+  "blobId": "eutRS0w3RLXgPFFuGHPK5BcsCzr_Vs7PDP7PUaLQV0k",
+  "digest": "BB3vxaoX2AsfnoeDoHkddFZ6emrmTXi1XHDDubxXq1Po",
+  "decision": {
+    "id": "recorded-1",
+    "recipient": "0xabababababababababababababababababababababababababababababababab",
+    "amount": 0.5,
+    "reason": "Integration test: too large for someone I have never paid.",
+    "ts": 1793380697,
+    "action": "deny",
+    "source": "demo",
+    "kind": "soft"
+  },
+  "steps": [
+    {
+      "title": "Empty memory",
+      "caption": "A first send of 0.5 SUI to a new recipient. Nothing is remembered, so there is nothing to say.",
+      "candidate": { "novelRecipient": true, "amountRatio": 1, "hour": 14, "interactions": 0 },
+      "remembered": false,
+      "amount": 0.5,
+      "expect": { "level": "normal", "similarity": null }
+    },
+    {
+      "title": "You say no",
+      "caption": "You deny it and type why. The reason is saved to Walrus Memory. This took about 25 seconds, and a denied send never touches the chain.",
+      "candidate": { "novelRecipient": true, "amountRatio": 1, "hour": 14, "interactions": 0 },
+      "remembered": false,
+      "amount": 0.5,
+      "saved": true,
+      "expect": { "level": "normal", "similarity": null }
+    },
+    {
+      "title": "The same send again",
+      "caption": "The same 0.5 SUI send to a new recipient. Your own reason is quoted back to you, with the receipt.",
+      "candidate": { "novelRecipient": true, "amountRatio": 1, "hour": 14, "interactions": 0 },
+      "remembered": true,
+      "amount": 0.5,
+      "expect": { "level": "reflection", "similarity": 1 }
+    },
+    {
+      "title": "After a real send",
+      "caption": "A confirmed 0.01 SUI send went through Tatum. Your usual size is now 0.01 SUI, so the same 0.5 SUI send is 50 times larger. It still matches your refusal exactly.",
+      "candidate": { "novelRecipient": true, "amountRatio": 50, "hour": 14, "interactions": 0 },
+      "remembered": true,
+      "amount": 0.5,
+      "expect": { "level": "reflection", "similarity": 1 }
+    },
+    {
+      "title": "A much smaller send",
+      "caption": "0.01 SUI to a new recipient is only a partial match: same newness and hour, very different size.",
+      "candidate": { "novelRecipient": true, "amountRatio": 1, "hour": 14, "interactions": 0 },
+      "remembered": true,
+      "amount": 0.01,
+      "expect": { "level": "reflection", "similarity": 0.7 }
+    }
+  ]
+}
