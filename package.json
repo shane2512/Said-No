@@ -10,7 +10,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@mysten-incubation/memwal": "^0.1.11",
+    "@mysten/seal": "^1.5.2",
     "@mysten/sui": "^2.5.0",
+    "@mysten/walrus": "^1.2.37",
     "next": "^15.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
