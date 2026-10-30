@@ -30,6 +30,8 @@ export default function CheckApp() {
   const [sendMsg, setSendMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
   const [sending, setSending] = useState(false);
   const [why, setWhy] = useState(false);
+  const [picked, setPicked] = useState<Status["network"] | null>(null);
+  const net = picked ?? status?.network ?? "testnet";
 
   useEffect(() => { getStatus().then(setStatus); }, []);
 
@@ -45,7 +47,7 @@ export default function CheckApp() {
     setDenying(false);
     try {
       const h = override ? override.hour : hour;
-      const { status: code, data } = await postJson("/api/check", { recipient: to, amount: amt, hour: h ?? new Date().getHours() });
+      const { status: code, data } = await postJson("/api/check", { recipient: to, amount: amt, hour: h ?? new Date().getHours(), network: net });
       if (code !== 200) throw new Error(data.detail ?? data.error ?? "check failed");
       setRes(data);
     } catch {
@@ -116,7 +118,7 @@ export default function CheckApp() {
     setSending(true);
     try {
       let digest: string | undefined;
-      if (status?.executeOn) {
+      if (status?.executeOn && net === "testnet") {
         const { status: code, data } = await postJson("/api/send", { recipient: recipient.trim(), amount: Number(amount), acknowledged: true, hour: hour ?? new Date().getHours() });
         if (code !== 200) throw new Error(data.error ?? "The send failed.");
         digest = data.digest;
@@ -151,9 +153,18 @@ export default function CheckApp() {
           <div className="sub">Tatum reads the chain. Memory recalls you.</div>
         </div>
         <div className="stat" aria-label="This deployment">
-          <div className="stat-r"><span>Chain</span><span>{status ? `Sui ${status.network}` : "…"}</span></div>
+          <div className="stat-r">
+            <span>Chain</span>
+            <span role="group" aria-label="Sui network" style={{ display: "inline-flex", gap: "8rem" }}>
+              {(["testnet", "mainnet"] as const).map((n) => (
+                <button key={n} type="button" aria-pressed={net === n} disabled={!status}
+                  onClick={() => { setPicked(n); setRes(null); setCheckErr(""); setSendMsg(null); }}
+                  style={{ padding: "2rem 10rem", border: "1rem solid var(--line)", textTransform: "uppercase", fontSize: "13rem", borderColor: net === n ? "var(--text)" : undefined, opacity: net === n ? 1 : 0.55 }}>{n}</button>
+              ))}
+            </span>
+          </div>
           <div className="stat-r"><span>Memory</span><span className={status?.memory === "local" ? "warn" : undefined}>{status ? (status.memory === "local" ? "Local, not Walrus" : "Walrus mainnet") : "…"}</span></div>
-          <div className="stat-r"><span>Execution</span><span>{status ? (status.executeOn ? `On, max ${status.maxSend} SUI` : "Off") : "…"}</span></div>
+          <div className="stat-r"><span>Execution</span><span>{status ? (status.executeOn ? (net === "testnet" ? `On, max ${status.maxSend} SUI` : "Testnet only") : "Off") : "…"}</span></div>
           <div className="stat-r"><span>Sender</span><span>{status ? short(status.sender) : "…"}</span></div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { MemWal } from "@mysten-incubation/memwal";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 import { createGrpcChainSource, createTatumClient } from "./chain";
-import { getNetworkConfig } from "./config";
+import { getNetworkConfig, type Network } from "./config";
 import { fromMemWal, type MemLike } from "./memory";
 import { createLocalMem } from "./memory-local";
 import type { ChainSource } from "./tatum";
@@ -10,7 +10,7 @@ import type { SuiGrpcClient } from "@mysten/sui/grpc";
 const clean = (v?: string) => (v ?? "").trim().replace(/^["']|["']$/g, "");
 
 export type Runtime = {
-  network: "testnet" | "mainnet";
+  network: Network;
   memory: "walrus" | "local";
   address: string;
   keypair: Ed25519Keypair;
@@ -20,16 +20,22 @@ export type Runtime = {
 };
 
 // Survives dev hot reloads so the local memory backend keeps its contents between edits.
-const store = globalThis as unknown as { __saidNoRuntime?: Runtime };
+type Store = { mem?: MemLike; byNetwork: Partial<Record<Network, Runtime>> };
+const g = globalThis as unknown as { __saidNoRuntime?: Store };
 
-/** Server-only: builds clients from environment keys. Never import this from client components. */
-export function getRuntime(): Runtime {
-  if (store.__saidNoRuntime) return store.__saidNoRuntime;
+/**
+ * Server-only: builds clients from environment keys. Never import this from client components.
+ * One chain client per network; the memory (and so the user's decisions) is shared between them.
+ */
+export function getRuntime(network?: string): Runtime {
+  const store = (g.__saidNoRuntime ??= { byNetwork: {} });
   const env = process.env;
-  const cfg = getNetworkConfig(clean(env.NETWORK));
+  const cfg = getNetworkConfig(network ?? clean(env.NETWORK));
+  const cached = store.byNetwork[cfg.network];
+  if (cached) return cached;
   const local = clean(env.MEMORY_BACKEND) === "local";
   // Memory has no working testnet relayer, so the real backend always uses the mainnet relayer.
-  const mem = local
+  const mem = store.mem ?? (local
     ? createLocalMem()
     : fromMemWal(
         MemWal.create({
@@ -38,10 +44,11 @@ export function getRuntime(): Runtime {
           serverUrl: clean(env.MEMWAL_SERVER_URL) || "https://relayer.memory.walrus.xyz",
           namespace: "decisions",
         }),
-      );
+      ));
+  store.mem = mem;
   const keypair = Ed25519Keypair.fromSecretKey(clean(env.DEMO_WALLET_KEY));
   const client = createTatumClient(cfg, clean(cfg.network === "mainnet" ? env.TATUM_API_KEY_MAINNET || env.TATUM_API_KEY : env.TATUM_API_KEY));
-  store.__saidNoRuntime = {
+  const rt: Runtime = {
     network: cfg.network,
     memory: local ? "local" : "walrus",
     address: keypair.toSuiAddress(),
@@ -50,5 +57,6 @@ export function getRuntime(): Runtime {
     source: createGrpcChainSource(client),
     mem,
   };
-  return store.__saidNoRuntime;
+  store.byNetwork[cfg.network] = rt;
+  return rt;
 }

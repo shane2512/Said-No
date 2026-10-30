@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   if (!parsed.success) return Response.json({ error: "invalid input" }, { status: 400 });
   const { recipient, amount, acknowledged, hour } = parsed.data;
   try {
-    const rt = getRuntime();
+    const rt = getRuntime("testnet") /* sends never follow the network toggle */;
     // Re-check on the server: the browser's earlier verdict is not trusted.
     const check = await checkSend(
       { sender: rt.address, recipient, amount },

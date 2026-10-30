@@ -12,6 +12,7 @@ const body = z.object({
   recipient: z.string().regex(/^0x[0-9a-fA-F]{1,64}$/),
   amount: z.number().positive().max(1e9),
   hour: z.number().int().min(0).max(23).optional(),
+  network: z.enum(["testnet", "mainnet"]).optional(),
 });
 
 export async function POST(req: Request) {
@@ -19,9 +20,9 @@ export async function POST(req: Request) {
   if (tooMany) return tooMany;
   const parsed = body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: "invalid input" }, { status: 400 });
-  const { recipient, amount, hour } = parsed.data;
+  const { recipient, amount, hour, network } = parsed.data;
   try {
-    const rt = getRuntime();
+    const rt = getRuntime(network);
     const result = await checkSend(
       { sender: rt.address, recipient, amount },
       { source: rt.source, mem: rt.mem, hour: () => hour ?? new Date().getUTCHours(), publicView: publicView(process.env) },

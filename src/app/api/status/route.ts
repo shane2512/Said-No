@@ -4,9 +4,9 @@ import { executeAllowed, MAX_SEND_SUI, publicView, writesAllowed } from "@/lib/s
 export const runtime = "nodejs";
 
 /** What this deployment can do, so the UI states it instead of failing later. No secrets. */
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const rt = getRuntime();
+    const rt = getRuntime(new URL(req.url).searchParams.get("network") ?? undefined);
     return Response.json({
       network: rt.network,
       memory: rt.memory,

@@ -59,7 +59,7 @@ Built for the Tatum x Walrus Memory "Total Recall" hackathon. Tracks: Consumer F
 
 - **These 12 entries are example decisions drafted with an AI assistant**, not reasons typed while deciding a live send. They are labelled `real` at the account owner's choice, so the public site hides them by design; the table above is the proof. Their script is [`scripts/seed-mainnet.ts`](scripts/seed-mainnet.ts) and the text is in [`src/lib/seed-data.ts`](src/lib/seed-data.ts).
 - The recorded run on `/app` is one genuine end-to-end run: a memory saved to Walrus (label `demo`, blob `eutRS0w3RLXgPFFuGHPK5BcsCzr_Vs7PDP7PUaLQV0k`) and a 0.01 SUI testnet send through Tatum (digest `BB3vxaoX2AsfnoeDoHkddFZ6emrmTXi1XHDDubxXq1Po`). The page re-runs the engine over the recorded inputs; it does not replay stored verdicts.
-- Tatum chain work runs on **testnet** (Tatum's testnet is gRPC-only). Memory uses Walrus's mainnet relayer because the staging relayer is down.
+- The check page has a **testnet / mainnet toggle** for the Tatum reads (balance, history, dry run). Sending is testnet-only and off on the public site. Memory always uses Walrus's mainnet relayer (the staging relayer is down), so the same memories apply on either chain.
 - Sui JSON-RPC is decommissioned, so Tatum is used through its native gRPC gateway. Free-plan limit is 3 requests/second; calls are paced and retried.
 - Memory recall is semantic only, so each decision is stored as a sentence plus a JSON line and matched in code.
 - Details of every verified result: [docs/spike-results.md](docs/spike-results.md).
