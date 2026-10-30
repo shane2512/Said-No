@@ -10,7 +10,7 @@ const me = Ed25519Keypair.fromSecretKey(clean(process.env.DEMO_WALLET_KEY)).toSu
 const recipient = "0x" + "ab".repeat(32);
 
 async function main() {
-  const source = createGrpcChainSource(createTatumClient(cfg, clean(process.env.TATUM_API_KEY)));
+  const source = createGrpcChainSource(createTatumClient(cfg, clean(cfg.network === "mainnet" ? process.env.TATUM_API_KEY_MAINNET || process.env.TATUM_API_KEY : process.env.TATUM_API_KEY)));
   const facts = await getChainFacts(me, recipient, 0.01, source);
   if ("unavailable" in facts) {
     console.log("FAIL unavailable:", facts.reason, JSON.stringify(facts.requestLog));

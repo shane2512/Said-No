@@ -40,7 +40,7 @@ export function getRuntime(): Runtime {
         }),
       );
   const keypair = Ed25519Keypair.fromSecretKey(clean(env.DEMO_WALLET_KEY));
-  const client = createTatumClient(cfg, clean(env.TATUM_API_KEY));
+  const client = createTatumClient(cfg, clean(cfg.network === "mainnet" ? env.TATUM_API_KEY_MAINNET || env.TATUM_API_KEY : env.TATUM_API_KEY));
   store.__saidNoRuntime = {
     network: cfg.network,
     memory: local ? "local" : "walrus",

@@ -25,10 +25,11 @@ function add(name, value, sensitive = false) {
   console.log(`set ${name} (${value.length} chars)`);
 }
 
-add("NETWORK", "testnet");
+add("NETWORK", "mainnet");
 add("ALLOW_EXECUTE", "false");
 add("ALLOW_WRITES", "false");
 add("TATUM_API_KEY", env.TATUM_API_KEY, true);
+add("TATUM_API_KEY_MAINNET", env.TATUM_API_KEY_MAINNET, true);
 add("MEMWAL_ACCOUNT_ID", env.MEMWAL_ACCOUNT_ID);
 add("MEMWAL_DELEGATE_KEY", env.MEMWAL_DELEGATE_KEY, true);
 add("DEMO_WALLET_KEY", env.DEMO_WALLET_KEY, true);
