@@ -19,3 +19,8 @@ Environment: Node v26.12.1, pnpm 11.25.0, `@mysten/sui` 2.38.0, `@mysten-incubat
 ## Plan implications
 - Tatum chain work (reads, dry-run, execute) can be developed on testnet; Memory must use the mainnet relayer, so writes are real mainnet memories.
 - Native gRPC from Vercel serverless is UNTESTED; keep the Fly/Docker escape hatch.
+
+## Update: Memory write round trip on the mainnet relayer: PASS
+- `rememberAndWait` took ~25.7 s (blob_id `boiRl-wozKKKODrlbN2b3hPCM0RcHF6u7EZ3Mx_r22M`, namespace `spike`); `recall` took ~2.6 s and returned the memory (`total=1`, fields `blob_id,text,distance,created_at`, cosine `distance` ~0.30 for an exact-text query).
+- No funds were needed from the owner wallet: writes are HTTP requests signed with the delegate key (headers `x-public-key`, `x-signature`, `x-timestamp`, `x-nonce`); the relayer pays storage.
+- Implication: writes are slow. The UI must save a decision asynchronously (return a pending state, poll the job) and the demo must default to the baked replay.
