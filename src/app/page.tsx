@@ -1,3 +1,5 @@
+import Landing from "@/components/landing/Landing";
+
 export default function Home() {
-  return <main>Said-No</main>;
+  return <Landing />;
 }

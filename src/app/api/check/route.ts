@@ -5,18 +5,23 @@ import { checkSend } from "@/lib/service";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-const body = z.object({ recipient: z.string().regex(/^0x[0-9a-fA-F]{1,64}$/), amount: z.number().positive().max(1e9) });
+const body = z.object({
+  recipient: z.string().regex(/^0x[0-9a-fA-F]{1,64}$/),
+  amount: z.number().positive().max(1e9),
+  hour: z.number().int().min(0).max(23).optional(),
+});
 
 export async function POST(req: Request) {
   const parsed = body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: "invalid input" }, { status: 400 });
+  const { recipient, amount, hour } = parsed.data;
   try {
     const rt = getRuntime();
     const result = await checkSend(
-      { sender: rt.address, ...parsed.data },
-      { source: rt.source, mem: rt.mem, hour: () => new Date().getUTCHours() },
+      { sender: rt.address, recipient, amount },
+      { source: rt.source, mem: rt.mem, hour: () => hour ?? new Date().getUTCHours() },
     );
-    return Response.json({ network: rt.network, ...result });
+    return Response.json({ network: rt.network, memory: rt.memory, sender: rt.address, ...result });
   } catch (e) {
     return Response.json({ error: "check failed", detail: String((e as Error).message).slice(0, 200) }, { status: 503 });
   }

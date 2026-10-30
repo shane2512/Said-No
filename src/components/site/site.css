@@ -1,0 +1,140 @@
+/* Inner pages. Built from the landing tokens: hairline grid, panels, chamfers, corner ticks. */
+.inner { padding-top: 108rem; min-height: 100vh; display: flex; flex-direction: column; }
+.inner > main { flex: 1; }
+.inner .logo { margin-right: 200rem; }
+.site-foot { margin-top: 90rem; position: relative; z-index: 3; }
+.site-foot .copy { height: 110rem; border-top: 1rem solid var(--line); }
+
+.tcell { position: relative; z-index: 3; padding: 78rem 30rem 0 58rem; }
+.tcell .sub { margin-left: 22rem; line-height: 26rem; }
+
+/* status */
+.stat { position: relative; z-index: 3; padding: 26rem 30rem; font-size: 15.5rem; }
+.stat-r { display: flex; justify-content: space-between; gap: 12rem; padding: 9rem 0; border-bottom: 1rem solid var(--line); }
+.stat-r:last-child { border-bottom: 0; }
+.stat-r span:first-child { color: var(--muted); }
+.warn { color: var(--orange); }
+
+/* forms */
+.col { position: relative; z-index: 3; padding: 34rem 30rem 40rem; }
+.col-h { font-size: 15rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 20rem; }
+.fld { display: block; margin-bottom: 24rem; font-size: 16rem; }
+.fld > span { display: block; color: var(--muted); margin-bottom: 8rem; }
+.fld input, .fld textarea, .fld select { width: 100%; background: var(--panel); border: 1rem solid var(--line); color: var(--text); font: inherit; font-size: 17rem; padding: 14rem; border-radius: 0; }
+.fld textarea { min-height: 96rem; resize: vertical; line-height: 26rem; }
+.fld input:focus, .fld textarea:focus, .fld select:focus { outline: 2rem solid var(--orange); outline-offset: -1rem; }
+.err { color: var(--orange); font-size: 15rem; line-height: 22rem; margin: -10rem 0 18rem; }
+
+.scen { position: relative; display: block; width: 100%; padding: 18rem 36rem; text-align: left; font-size: 16rem; line-height: 23rem; border: 1rem solid var(--line); border-bottom: 0; transition: background .3s, color .3s; }
+.scen:last-child { border-bottom: 1rem solid var(--line); }
+.scen small { display: block; color: var(--muted); font-size: 14rem; }
+.scen:hover { background: var(--panel); }
+.scen:hover .cn { border-color: var(--orange); }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; height: 55rem; padding: 0 26rem; border: 1rem solid var(--line); font-size: 16rem; letter-spacing: .02em; text-transform: uppercase; transition: background .3s, color .3s, border-color .3s; white-space: nowrap; }
+.btn:hover { border-color: var(--text); }
+.btn[disabled], .cta[disabled] { opacity: .45; cursor: not-allowed; }
+button.cta { width: 100%; }
+.acts { display: flex; flex-wrap: wrap; gap: 14rem; align-items: center; margin-top: 28rem; }
+.acts .cta { width: auto; padding: 0 30rem; }
+
+/* verdict */
+.ladder { display: grid; grid-template-columns: repeat(4, 1fr); border: 1rem solid var(--line); margin-bottom: 30rem; }
+.ladder > div { padding: 15rem 12rem; font-size: 15rem; text-align: center; color: var(--muted); border-right: 1rem solid var(--line); }
+.ladder > div:last-child { border-right: 0; }
+.ladder > div.on { background: var(--orange); color: var(--ink); }
+.verdict { position: relative; z-index: 3; background: var(--panel); padding: 38rem 40rem 44rem; min-height: 470rem; }
+.v-level { font-size: 62rem; margin-bottom: 20rem; }
+.v-head { font-size: 29rem; line-height: 38rem; margin-bottom: 18rem; }
+.v-quote { border-left: 3rem solid var(--orange); padding: 4rem 0 4rem 20rem; font-size: 21rem; line-height: 31rem; margin-bottom: 16rem; }
+.v-meta { font-size: 14.5rem; line-height: 23rem; color: var(--muted); word-break: break-all; }
+.v-meta a { color: var(--text); text-decoration: underline; text-underline-offset: 3rem; }
+.v-counter { margin-top: 20rem; padding: 14rem 18rem; border: 1rem dashed var(--line); font-size: 16.5rem; line-height: 25rem; }
+.v-reasons { list-style: none; margin-top: 16rem; font-size: 16rem; line-height: 25rem; color: var(--muted); }
+.v-idle { color: var(--muted); font-size: 20rem; line-height: 30rem; max-width: 620rem; }
+.note { margin-top: 20rem; font-size: 16rem; line-height: 25rem; }
+.note b { color: var(--orange); font-weight: 400; }
+.pending { display: inline-block; width: 11rem; height: 11rem; background: var(--orange); margin-right: 10rem; animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: .2; } }
+.deny-box { margin-top: 28rem; padding-top: 26rem; border-top: 1rem solid var(--line); }
+
+/* why */
+.why { position: relative; z-index: 3; margin-top: 0; border-top: 1rem solid var(--line); }
+.why-t { width: 100%; display: flex; justify-content: space-between; align-items: center; height: 72rem; padding: 0 40rem; font-size: 19rem; background: var(--panel); }
+.why-t b { color: var(--orange); font-weight: 400; font-size: 28rem; }
+.why-b { background: var(--panel); padding: 8rem 40rem 40rem; font-size: 16rem; line-height: 25rem; }
+.why-b pre { font-family: inherit; font-size: 15rem; line-height: 24rem; color: var(--muted); padding: 16rem; border: 1rem solid var(--line); overflow-x: auto; margin-bottom: 22rem; }
+.mrow { display: grid; grid-template-columns: 76rem 1fr 130rem 82rem; gap: 14rem; align-items: center; padding: 13rem 0; border-top: 1rem solid var(--line); }
+.bar { height: 7rem; background: var(--line); margin-top: 6rem; }
+.bar i { display: block; height: 100%; background: var(--orange); }
+.link-btn { font-size: 14rem; color: var(--muted); text-decoration: underline; text-underline-offset: 3rem; text-align: right; }
+.link-btn:hover { color: var(--orange); }
+
+/* badges */
+.badge { display: inline-block; padding: 3rem 8rem; font-size: 12.5rem; line-height: 17rem; border: 1rem solid var(--line); text-transform: uppercase; letter-spacing: .04em; color: var(--muted); white-space: nowrap; }
+.badge.deny { color: var(--orange); border-color: var(--orange); }
+.badge.real { color: var(--ink); background: var(--text); border-color: var(--text); }
+
+/* facts */
+.fact { display: flex; justify-content: space-between; gap: 14rem; padding: 14rem 0; font-size: 15.5rem; line-height: 22rem; border-top: 1rem solid var(--line); }
+.fact span:first-child { color: var(--muted); }
+.fact span:last-child { text-align: right; }
+.log-r { display: flex; justify-content: space-between; font-size: 13.5rem; line-height: 24rem; color: var(--muted); }
+
+/* lab */
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); position: relative; z-index: 3; background: var(--bg); }
+.ntile { padding: 22rem 30rem 28rem; border-right: 1rem solid var(--line); border-bottom: 1rem solid var(--line); font-size: 15rem; color: var(--muted); }
+.ntile:last-child { border-right: 0; }
+.ntile .dt { display: flex; font-size: 52rem; color: var(--text); margin-top: 14rem; }
+.mem { position: relative; z-index: 3; background: var(--bg); display: grid; grid-template-columns: 130rem 1fr 110rem 200rem 96rem; gap: 18rem; align-items: start; padding: 20rem 30rem; border-bottom: 1rem solid var(--line); font-size: 15.5rem; line-height: 23rem; }
+.mem.gone { opacity: .45; }
+.mem .why-txt { font-size: 17rem; line-height: 25rem; }
+.mem small { display: block; color: var(--muted); font-size: 13.5rem; word-break: break-all; }
+.empty { position: relative; z-index: 3; background: var(--bg); padding: 60rem 30rem; color: var(--muted); font-size: 19rem; line-height: 29rem; }
+
+/* docs */
+.toc { position: sticky; top: 140rem; display: flex; flex-direction: column; gap: 16rem; font-size: 16.5rem; }
+.toc a { color: var(--muted); transition: color .3s; }
+.toc a:hover { color: var(--orange); }
+.doc { position: relative; z-index: 3; grid-column: span 3; padding: 34rem 58rem 0; background: var(--bg); border-left: 1rem solid var(--line); }
+.doc section { padding-bottom: 66rem; scroll-margin-top: 130rem; }
+.doc h2 { font-weight: 400; font-size: 29rem; line-height: 40rem; margin-bottom: 18rem; display: flex; gap: 12rem; }
+.doc h2::before { content: ""; width: 10rem; height: 10rem; margin-top: 14rem; background: var(--orange); flex: none; }
+.doc p, .doc li { font-size: 18rem; line-height: 30rem; color: #c9c9c7; max-width: 980rem; }
+.doc p + p { margin-top: 14rem; }
+.doc ul { list-style: none; }
+.doc li { padding: 8rem 0 8rem 22rem; position: relative; }
+.doc li::before { content: ""; position: absolute; left: 0; top: 19rem; width: 7rem; height: 7rem; background: var(--muted); }
+.doc pre, .doc code { font-family: inherit; }
+.doc pre { background: var(--panel); border: 1rem solid var(--line); padding: 22rem 24rem; font-size: 15.5rem; line-height: 24rem; overflow-x: auto; margin: 16rem 0; color: var(--text); }
+.doc code { color: var(--text); font-size: .94em; }
+.doc table { width: 100%; border-collapse: collapse; font-size: 15.5rem; line-height: 24rem; margin: 14rem 0; }
+.doc th { text-align: left; font-weight: 400; color: var(--muted); }
+.doc th, .doc td { padding: 12rem 16rem 12rem 0; border-bottom: 1rem solid var(--line); vertical-align: top; }
+
+@media (max-width: 900px) {
+  .inner { padding-top: 108rem; }
+  .verdict { padding: 24rem; }
+  .ladder > div { font-size: 18rem; padding: 12rem 4rem; }
+  .fld input, .fld textarea, .fld select { font-size: 24rem; }
+  .fld, .scen, .fact, .note, .why-b, .stat { font-size: 22rem; line-height: 32rem; }
+  .scen small, .log-r { font-size: 18rem; }
+  .btn { font-size: 20rem; }
+  .col { padding: 24rem 0; }
+  .v-head { font-size: 32rem; line-height: 42rem; }
+  .v-quote { font-size: 24rem; line-height: 34rem; }
+  .v-meta, .link-btn { font-size: 18rem; line-height: 28rem; }
+  .mrow { grid-template-columns: 90rem 1fr; }
+  .mem { grid-template-columns: 1fr; font-size: 22rem; line-height: 32rem; }
+  .mem .why-txt { font-size: 24rem; line-height: 34rem; }
+  .mem small { font-size: 18rem; line-height: 26rem; }
+  .tiles { grid-template-columns: 1fr 1fr 1fr; }
+  .ntile { padding: 16rem; font-size: 17rem; }
+  .doc { padding: 20rem 0 0; }
+  .doc p, .doc li { font-size: 24rem; line-height: 36rem; }
+  .doc h2 { font-size: 34rem; line-height: 44rem; }
+  .doc pre, .doc table { font-size: 19rem; line-height: 28rem; }
+  .toc { position: static; font-size: 24rem; padding-bottom: 20rem; }
+  .tcell { padding: 30rem 0; }
+  .empty { font-size: 24rem; line-height: 34rem; padding: 30rem 0; }
+}

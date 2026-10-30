@@ -3,6 +3,7 @@ import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 import { createGrpcChainSource, createTatumClient } from "./chain";
 import { getNetworkConfig } from "./config";
 import { fromMemWal, type MemLike } from "./memory";
+import { createLocalMem } from "./memory-local";
 import type { ChainSource } from "./tatum";
 import type { SuiGrpcClient } from "@mysten/sui/grpc";
 
@@ -10,6 +11,7 @@ const clean = (v?: string) => (v ?? "").trim().replace(/^["']|["']$/g, "");
 
 export type Runtime = {
   network: "testnet" | "mainnet";
+  memory: "walrus" | "local";
   address: string;
   keypair: Ed25519Keypair;
   client: SuiGrpcClient;
@@ -17,29 +19,36 @@ export type Runtime = {
   mem: MemLike;
 };
 
-let cached: Runtime | undefined;
+// Survives dev hot reloads so the local memory backend keeps its contents between edits.
+const store = globalThis as unknown as { __saidNoRuntime?: Runtime };
 
 /** Server-only: builds clients from environment keys. Never import this from client components. */
 export function getRuntime(): Runtime {
-  if (cached) return cached;
+  if (store.__saidNoRuntime) return store.__saidNoRuntime;
   const env = process.env;
   const cfg = getNetworkConfig(clean(env.NETWORK));
-  // Memory has no working testnet relayer, so it always uses the mainnet relayer (see docs/spike-results.md).
-  const memwal = MemWal.create({
-    key: clean(env.MEMWAL_DELEGATE_KEY),
-    accountId: clean(env.MEMWAL_ACCOUNT_ID),
-    serverUrl: clean(env.MEMWAL_SERVER_URL) || "https://relayer.memory.walrus.xyz",
-    namespace: "decisions",
-  });
+  const local = clean(env.MEMORY_BACKEND) === "local";
+  // Memory has no working testnet relayer, so the real backend always uses the mainnet relayer.
+  const mem = local
+    ? createLocalMem()
+    : fromMemWal(
+        MemWal.create({
+          key: clean(env.MEMWAL_DELEGATE_KEY),
+          accountId: clean(env.MEMWAL_ACCOUNT_ID),
+          serverUrl: clean(env.MEMWAL_SERVER_URL) || "https://relayer.memory.walrus.xyz",
+          namespace: "decisions",
+        }),
+      );
   const keypair = Ed25519Keypair.fromSecretKey(clean(env.DEMO_WALLET_KEY));
   const client = createTatumClient(cfg, clean(env.TATUM_API_KEY));
-  cached = {
+  store.__saidNoRuntime = {
     network: cfg.network,
+    memory: local ? "local" : "walrus",
     address: keypair.toSuiAddress(),
     keypair,
     client,
     source: createGrpcChainSource(client),
-    mem: fromMemWal(memwal),
+    mem,
   };
-  return cached;
+  return store.__saidNoRuntime;
 }

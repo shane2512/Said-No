@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { getRuntime } from "@/lib/runtime";
-import { recordDecision } from "@/lib/service";
+import { recordDecision, writesAllowed } from "@/lib/service";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -26,6 +26,7 @@ const body = z.object({
 });
 
 export async function POST(req: Request) {
+  if (!writesAllowed(process.env)) return Response.json({ error: "Saving decisions is off on this deployment." }, { status: 403 });
   const parsed = body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: "invalid input" }, { status: 400 });
   try {

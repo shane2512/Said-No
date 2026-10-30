@@ -1,5 +1,6 @@
 import { SuiGrpcClient } from "@mysten/sui/grpc";
 import { Transaction } from "@mysten/sui/transactions";
+import type { Signer } from "@mysten/sui/cryptography";
 import { GrpcTransport } from "@protobuf-ts/grpc-transport";
 import { ChannelCredentials } from "@grpc/grpc-js";
 import type { NetworkConfig } from "./config";
@@ -49,6 +50,18 @@ export function createTatumClient(cfg: NetworkConfig, apiKey: string): SuiGrpcCl
     meta: { "x-api-key": apiKey },
   });
   return new SuiGrpcClient({ network: cfg.network, transport });
+}
+
+/** Builds, signs locally and submits a plain SUI transfer through Tatum. Returns the digest. */
+export async function executeSend(client: SuiGrpcClient, signer: Signer, recipient: string, amount: number): Promise<string> {
+  const tx = new Transaction();
+  const [coin] = tx.splitCoins(tx.gas, [Math.round(amount * MIST_PER_SUI)]);
+  tx.transferObjects([coin], recipient);
+  const r = await client.core.signAndExecuteTransaction({ transaction: tx, signer });
+  const out = r as { Transaction?: { digest?: string }; FailedTransaction?: { digest?: string; status?: { error?: { message?: string } } } };
+  if (out.FailedTransaction) throw new Error(`Transaction failed: ${out.FailedTransaction.status?.error?.message ?? out.FailedTransaction.digest}`);
+  if (!out.Transaction?.digest) throw new Error("No digest returned");
+  return out.Transaction.digest;
 }
 
 export function createGrpcChainSource(client: SuiGrpcClient): ChainSource {

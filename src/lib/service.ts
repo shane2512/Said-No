@@ -83,3 +83,22 @@ export async function recordDecision(
 
 /** Execution is off unless explicitly enabled, so a public visitor can never spend. */
 export const executeAllowed = (env: Record<string, string | undefined>) => env.ALLOW_EXECUTE === "true";
+
+/** A hosted page must not let anonymous visitors write into the owner's memory account. */
+export const writesAllowed = (env: Record<string, string | undefined>) =>
+  env.ALLOW_WRITES === "true" || env.NODE_ENV !== "production";
+
+/** Upper bound on any send from the demo wallet. */
+export const MAX_SEND_SUI = 0.1;
+
+export type GateInput = { level: Level; amount: number; acknowledged: boolean; executeOn: boolean; dryRunOk: boolean };
+export type GateResult = { ok: true } | { ok: false; status: number; reason: string };
+
+/** The last check before a send. The user stays in control, but friction must be acknowledged. */
+export function sendGate(g: GateInput): GateResult {
+  if (!g.executeOn) return { ok: false, status: 403, reason: "Execution is off on this deployment." };
+  if (g.amount > MAX_SEND_SUI) return { ok: false, status: 400, reason: `The demo wallet sends at most ${MAX_SEND_SUI} SUI.` };
+  if (!g.dryRunOk) return { ok: false, status: 409, reason: "The dry-run did not succeed, so this send was not submitted." };
+  if (g.level !== "normal" && !g.acknowledged) return { ok: false, status: 409, reason: "Confirm that this send is intentional first." };
+  return { ok: true };
+}
