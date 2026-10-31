@@ -57,6 +57,7 @@ export function getMemory(owner: string): MemLike {
           serverUrl: clean(env.MEMWAL_SERVER_URL) || "https://relayer.memory.walrus.xyz",
           namespace: `wallet-${owner}`,
         }),
+        `wallet-${owner}`,
       );
   s.owners.set(owner, mem);
   return mem;

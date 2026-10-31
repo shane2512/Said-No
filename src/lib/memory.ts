@@ -2,7 +2,6 @@ import { z } from "zod";
 import type { MemWal } from "@mysten-incubation/memwal";
 import type { Decision } from "./types";
 
-export const NAMESPACE = "decisions";
 const PREFIX = "DECISION_JSON:";
 
 /** The subset of the Walrus Memory SDK this app uses; lets tests inject a fake. */
@@ -16,11 +15,12 @@ export type MemLike = {
   }): Promise<{ results: { blob_id: string; text: string; distance: number; created_at?: string }[]; total: number }>;
 };
 
-export function fromMemWal(m: MemWal): MemLike {
+/** The namespace is bound here, once, so a caller can never read or write another wallet's memories by passing its own. */
+export function fromMemWal(m: MemWal, namespace: string): MemLike {
   return {
-    remember: (text, namespace) => m.remember(text, namespace),
+    remember: (text) => m.remember(text, namespace),
     waitForRememberJob: (jobId) => m.waitForRememberJob(jobId),
-    recall: (params) => m.recall(params),
+    recall: (params) => m.recall({ ...params, namespace }),
   };
 }
 
@@ -62,7 +62,7 @@ export async function saveDecision(
   const { blobId: _omit, ...payload } = d;
   const text = `${d.action} ${d.amount} to ${d.recipient}: ${d.reason}\n${PREFIX}${JSON.stringify(payload)}`;
   try {
-    const { job_id } = await deps.mem.remember(text, NAMESPACE);
+    const { job_id } = await deps.mem.remember(text);
     seen.set(d.id, job_id);
     return { jobId: job_id };
   } catch (e) {
@@ -79,7 +79,7 @@ export async function finishDecision(jobId: string, deps: { mem: MemLike }): Pro
 export async function loadDecisions(deps: {
   mem: MemLike;
 }): Promise<{ decisions: Decision[]; ignored: number }> {
-  const { results } = await deps.mem.recall({ query: "said-no decision", limit: 100, namespace: NAMESPACE });
+  const { results } = await deps.mem.recall({ query: "said-no decision", limit: 100 });
   const byId = new Map<string, Decision>();
   let ignored = 0;
   for (const r of results) {

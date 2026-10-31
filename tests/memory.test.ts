@@ -47,11 +47,11 @@ function fakeMem(opts: { failFirstWrites?: number } = {}) {
 }
 
 describe("memory layer", () => {
-  it("stores a natural-language line plus a JSON line in the decisions namespace", async () => {
+  it("stores a natural-language line plus a JSON line in the memory client's own namespace", async () => {
     const { mem, stored } = fakeMem();
     const res = await saveDecision(base, { mem });
     expect(res).toEqual({ jobId: "job1" });
-    expect(stored[0].namespace).toBe("decisions");
+    expect(stored[0].namespace).toBe("default"); // never an explicit shared namespace
     expect(stored[0].text).toContain("amount too high");
     expect(stored[0].text).toContain("DECISION_JSON:");
   });
@@ -68,9 +68,9 @@ describe("memory layer", () => {
   it("ignores and counts malformed memories without throwing", async () => {
     const { mem, stored } = fakeMem();
     stored.push(
-      { text: "just a note", blob_id: "b1", namespace: "decisions" },
-      { text: "DECISION_JSON:{not json", blob_id: "b2", namespace: "decisions" },
-      { text: 'DECISION_JSON:{"id":"x"}', blob_id: "b3", namespace: "decisions" },
+      { text: "just a note", blob_id: "b1", namespace: "default" },
+      { text: "DECISION_JSON:{not json", blob_id: "b2", namespace: "default" },
+      { text: 'DECISION_JSON:{"id":"x"}', blob_id: "b3", namespace: "default" },
     );
     const { decisions, ignored } = await loadDecisions({ mem });
     expect(decisions).toHaveLength(0);
@@ -106,5 +106,21 @@ describe("memory layer", () => {
     await saveDecision({ ...base, id: "del", action: "delete", target: "d1" }, { mem });
     const { decisions } = await loadDecisions({ mem });
     expect(decisions[0]).toMatchObject({ action: "delete", target: "d1" });
+  });
+});
+
+import { fromMemWal } from "@/lib/memory";
+describe("fromMemWal", () => {
+  it("always uses its own namespace, even if a caller passes another", async () => {
+    const seen: (string | undefined)[] = [];
+    const fake = {
+      remember: async (_t: string, ns?: string) => { seen.push(ns); return { job_id: "1" }; },
+      recall: async (p: { namespace?: string }) => { seen.push(p.namespace); return { results: [], total: 0 }; },
+      waitForRememberJob: async () => ({ blob_id: "b" }),
+    };
+    const mem = fromMemWal(fake as never, "wallet-0xa");
+    await mem.remember("x", "someone-elses");
+    await mem.recall({ query: "q", namespace: "someone-elses" });
+    expect(seen).toEqual(["wallet-0xa", "wallet-0xa"]);
   });
 });

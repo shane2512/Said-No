@@ -31,6 +31,7 @@ async function main() {
       serverUrl: "https://relayer.memory.walrus.xyz",
       namespace: "decisions",
     }),
+    "decisions",
   );
 
   const jobs: { id: string; job: string }[] = [];

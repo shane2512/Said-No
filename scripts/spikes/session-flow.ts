@@ -32,7 +32,7 @@ async function main() {
   const feat = { novelRecipient: true, amountRatio: 1, hour: 14, interactions: 0 };
   const saved = await post("/api/decide", { action: "deny", recipient, amount: 0.5, reason: "wallet A private reason", kind: "soft", features: feat }, a.token);
   ok("A saves a refusal", saved.status === 202, JSON.stringify(saved.data).slice(0, 80));
-  await get(`/api/jobs/${saved.data.jobId}`, a.token);
+  for (let i = 0; i < 14; i++) { const j = await get(`/api/jobs/${saved.data.jobId}`, a.token); if (j.status === 200) break; await new Promise((r) => setTimeout(r, 3000)); }
 
   const memA = await get("/api/memories", a.token);
   const memB = await get("/api/memories", b.token);
