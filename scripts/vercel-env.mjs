@@ -26,7 +26,7 @@ function add(name, value, sensitive = false) {
 }
 
 add("NETWORK", "mainnet");
-add("ALLOW_EXECUTE", "false");
+add("ALLOW_EXECUTE", "true");
 add("ALLOW_WRITES", "false");
 add("TATUM_API_KEY", env.TATUM_API_KEY, true);
 add("TATUM_API_KEY_MAINNET", env.TATUM_API_KEY_MAINNET, true);

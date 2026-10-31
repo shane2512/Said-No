@@ -4,7 +4,6 @@ import type { ChainFacts, RequestLogEntry } from "@/lib/tatum";
 export type Status = {
   network: "testnet" | "mainnet";
   memory: "walrus" | "local";
-  sender: string;
   executeOn: boolean;
   writesOn: boolean;
   publicView: boolean;

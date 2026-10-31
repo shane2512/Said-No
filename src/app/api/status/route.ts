@@ -10,7 +10,6 @@ export async function GET(req: Request) {
     return Response.json({
       network: rt.network,
       memory: rt.memory,
-      sender: rt.address,
       executeOn: executeAllowed(process.env),
       writesOn: writesAllowed(process.env),
       publicView: publicView(process.env),

@@ -1,5 +1,4 @@
 import { MemWal } from "@mysten-incubation/memwal";
-import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 import { createGrpcChainSource, createTatumClient } from "./chain";
 import { getNetworkConfig, type Network } from "./config";
 import { fromMemWal, type MemLike } from "./memory";
@@ -12,8 +11,6 @@ const clean = (v?: string) => (v ?? "").trim().replace(/^["']|["']$/g, "");
 export type Runtime = {
   network: Network;
   memory: "walrus" | "local";
-  address: string;
-  keypair: Ed25519Keypair;
   client: SuiGrpcClient;
   source: ChainSource;
   mem: MemLike;
@@ -46,13 +43,10 @@ export function getRuntime(network?: string): Runtime {
         }),
       ));
   store.mem = mem;
-  const keypair = Ed25519Keypair.fromSecretKey(clean(env.DEMO_WALLET_KEY));
   const client = createTatumClient(cfg, clean(cfg.network === "mainnet" ? env.TATUM_API_KEY_MAINNET || env.TATUM_API_KEY : env.TATUM_API_KEY));
   const rt: Runtime = {
     network: cfg.network,
     memory: local ? "local" : "walrus",
-    address: keypair.toSuiAddress(),
-    keypair,
     client,
     source: createGrpcChainSource(client),
     mem,

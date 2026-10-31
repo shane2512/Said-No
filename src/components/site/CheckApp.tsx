@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import { DAppKitProvider, useCurrentAccount, useDAppKit } from "@mysten/dapp-kit-react";
+import { ConnectButton } from "@mysten/dapp-kit-react/ui";
+import { dAppKit } from "./wallet";
 import { Corners, Display } from "../landing/Display";
 import { blobUrl, getStatus, LEVELS, postJson, short, waitForBlob, when, type CheckResponse, type Decision, type Status } from "./api";
 import RecordedRun from "./RecordedRun";
@@ -15,6 +18,17 @@ const SCENARIOS = [
 type Save = { state: "idle" } | { state: "saving"; what: string } | { state: "saved"; what: string; blobId?: string } | { state: "error"; msg: string };
 
 export default function CheckApp() {
+  return (
+    <DAppKitProvider dAppKit={dAppKit}>
+      <CheckInner />
+    </DAppKitProvider>
+  );
+}
+
+function CheckInner() {
+  const account = useCurrentAccount();
+  const kit = useDAppKit();
+  const sender = account?.address;
   const [status, setStatus] = useState<Status | null>(null);
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("0.5");
@@ -40,6 +54,7 @@ export default function CheckApp() {
     const amt = override?.amount ?? Number(amount);
     if (!/^0x[0-9a-fA-F]{1,64}$/.test(to)) return setFormErr("Enter a Sui address starting with 0x.");
     if (!Number.isFinite(amt) || amt <= 0) return setFormErr("Enter an amount above 0.");
+    if (!sender) return setFormErr("Connect your wallet first. Checks use your own address.");
     setFormErr("");
     setBusy(true);
     setCheckErr("");
@@ -47,7 +62,7 @@ export default function CheckApp() {
     setDenying(false);
     try {
       const h = override ? override.hour : hour;
-      const { status: code, data } = await postJson("/api/check", { recipient: to, amount: amt, hour: h ?? new Date().getHours(), network: net });
+      const { status: code, data } = await postJson("/api/check", { sender, recipient: to, amount: amt, hour: h ?? new Date().getHours(), network: net });
       if (code !== 200) throw new Error(data.detail ?? data.error ?? "check failed");
       setRes(data);
     } catch {
@@ -118,10 +133,14 @@ export default function CheckApp() {
     setSending(true);
     try {
       let digest: string | undefined;
-      if (status?.executeOn && net === "testnet") {
-        const { status: code, data } = await postJson("/api/send", { recipient: recipient.trim(), amount: Number(amount), acknowledged: true, hour: hour ?? new Date().getHours() });
-        if (code !== 200) throw new Error(data.error ?? "The send failed.");
-        digest = data.digest;
+      if (status?.executeOn && sender) {
+        const built = await postJson("/api/build", { sender, recipient: recipient.trim(), amount: Number(amount), acknowledged: true, hour: hour ?? new Date().getHours(), network: net });
+        if (built.status !== 200) throw new Error(built.data.error ?? "The send could not be prepared.");
+        // Your wallet asks you to approve and signs. The server never sees a key.
+        const signed = await kit.signTransaction({ transaction: built.data.transaction, network: net });
+        const sent = await postJson("/api/broadcast", { bytes: signed.bytes, signature: signed.signature, network: net });
+        if (sent.status !== 200) throw new Error(sent.data.detail ?? sent.data.error ?? "The send failed.");
+        digest = sent.data.digest;
       }
       await decide(res.verdict.level === "normal" ? "approve" : "override", "Approved after the check", "context");
       setSendMsg({
@@ -158,14 +177,15 @@ export default function CheckApp() {
             <span role="group" aria-label="Sui network" style={{ display: "inline-flex", gap: "8rem" }}>
               {(["testnet", "mainnet"] as const).map((n) => (
                 <button key={n} type="button" aria-pressed={net === n} disabled={!status}
-                  onClick={() => { setPicked(n); setRes(null); setCheckErr(""); setSendMsg(null); }}
+                  onClick={() => { setPicked(n); kit.switchNetwork(n); setRes(null); setCheckErr(""); setSendMsg(null); }}
                   style={{ padding: "2rem 10rem", border: "1rem solid var(--line)", textTransform: "uppercase", fontSize: "13rem", borderColor: net === n ? "var(--text)" : undefined, opacity: net === n ? 1 : 0.55 }}>{n}</button>
               ))}
             </span>
           </div>
           <div className="stat-r"><span>Memory</span><span className={status?.memory === "local" ? "warn" : undefined}>{status ? (status.memory === "local" ? "Local, not Walrus" : "Walrus mainnet") : "…"}</span></div>
-          <div className="stat-r"><span>Execution</span><span>{status ? (status.executeOn ? (net === "testnet" ? `On, max ${status.maxSend} SUI` : "Testnet only") : "Off") : "…"}</span></div>
-          <div className="stat-r"><span>Sender</span><span>{status ? short(status.sender) : "…"}</span></div>
+          <div className="stat-r"><span>Execution</span><span>{status ? (status.executeOn ? `On, max ${status.maxSend} SUI` : "Off") : "…"}</span></div>
+          <div className="stat-r"><span>Wallet</span><span>{sender ? short(sender) : "Not connected"}</span></div>
+          <div style={{ marginTop: "12rem" }}><ConnectButton /></div>
         </div>
       </div>
 

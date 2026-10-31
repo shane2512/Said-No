@@ -1,6 +1,7 @@
 import { SuiGrpcClient } from "@mysten/sui/grpc";
 import { Transaction } from "@mysten/sui/transactions";
 import type { Signer } from "@mysten/sui/cryptography";
+import { fromBase64 } from "@mysten/sui/utils";
 import { GrpcTransport } from "@protobuf-ts/grpc-transport";
 import { ChannelCredentials } from "@grpc/grpc-js";
 import type { NetworkConfig } from "./config";
@@ -57,7 +58,24 @@ export async function executeSend(client: SuiGrpcClient, signer: Signer, recipie
   const tx = new Transaction();
   const [coin] = tx.splitCoins(tx.gas, [Math.round(amount * MIST_PER_SUI)]);
   tx.transferObjects([coin], recipient);
-  const r = await client.core.signAndExecuteTransaction({ transaction: tx, signer });
+  return digestOf(await client.core.signAndExecuteTransaction({ transaction: tx, signer }));
+}
+
+/** A transfer built for the visitor's own wallet to sign. Returns the resolved transaction JSON. */
+export async function buildTransfer(client: SuiGrpcClient, sender: string, recipient: string, amount: number): Promise<string> {
+  const tx = new Transaction();
+  tx.setSender(sender);
+  const [coin] = tx.splitCoins(tx.gas, [Math.round(amount * MIST_PER_SUI)]);
+  tx.transferObjects([coin], recipient);
+  return tx.toJSON({ client });
+}
+
+/** Submits a transaction the visitor's wallet already signed. The server never holds a key. */
+export async function broadcastSigned(client: SuiGrpcClient, bytesBase64: string, signature: string): Promise<string> {
+  return digestOf(await client.core.executeTransaction({ transaction: fromBase64(bytesBase64), signatures: [signature] }));
+}
+
+function digestOf(r: unknown): string {
   const out = r as { Transaction?: { digest?: string }; FailedTransaction?: { digest?: string; status?: { error?: { message?: string } } } };
   if (out.FailedTransaction) throw new Error(`Transaction failed: ${out.FailedTransaction.status?.error?.message ?? out.FailedTransaction.digest}`);
   if (!out.Transaction?.digest) throw new Error("No digest returned");
