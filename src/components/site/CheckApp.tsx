@@ -178,7 +178,7 @@ function CheckInner() {
           <div className="bullet" data-scramble style={{ fontSize: "25rem", lineHeight: "34rem" }}>Before you sign</div>
           <div className="sub">Tatum reads the chain. Memory recalls you.</div>
         </div>
-        <div className="stat" aria-label="This deployment">
+        <div className="stat" aria-label="This deployment" style={{ zIndex: 30 }}>
           <div className="stat-r">
             <span>Chain</span>
             <span role="group" aria-label="Sui network" style={{ display: "inline-flex", gap: "8rem" }}>
@@ -193,7 +193,10 @@ function CheckInner() {
           <div className="stat-r"><span>Execution</span><span>{status ? (status.executeOn ? `On, max ${status.maxSend} SUI` : "Off") : "…"}</span></div>
           <div className="stat-r"><span>Wallet</span><span>{sender ? short(sender) : "Not connected"}</span></div>
           <div className="stat-r"><span>Your memory</span><span>{session.signedIn ? "Unlocked" : "Locked"}</span></div>
-          <div style={{ marginTop: "12rem" }}><ConnectButton /></div>
+          <div style={{ marginTop: "12rem", display: "flex", gap: "10rem", alignItems: "center", flexWrap: "wrap" }}>
+            <ConnectButton />
+            {sender && <button className="btn" type="button" style={{ height: "40rem", padding: "0 16rem", fontSize: "14rem" }} onClick={() => { void kit.disconnectWallet(); setRes(null); }}>Disconnect</button>}
+          </div>
         </div>
       </div>
 

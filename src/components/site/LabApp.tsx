@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Corners, Display } from "../landing/Display";
-import { DAppKitProvider } from "@mysten/dapp-kit-react";
+import { DAppKitProvider, useDAppKit } from "@mysten/dapp-kit-react";
 import { ConnectButton } from "@mysten/dapp-kit-react/ui";
 import { authHeaders, blobUrl, getStatus, postJson, short, waitForBlob, when, type Decision, type Status } from "./api";
 import { dAppKit } from "./wallet";
@@ -26,6 +26,7 @@ export default function LabApp() {
 
 function LabInner() {
   const session = useSession();
+  const kit = useDAppKit();
   const [status, setStatus] = useState<Status | null>(null);
   const [items, setItems] = useState<Decision[] | null>(null);
   const [ignored, setIgnored] = useState(0);
@@ -90,12 +91,15 @@ function LabInner() {
       </div>
 
       <div className="row row-line">
-        <div className="col">
+        <div className="col" style={{ zIndex: 30 }}>
           <div className="col-h">Your wallet</div>
           <p style={{ fontSize: "15.5rem", lineHeight: "24rem", color: "var(--muted)", marginBottom: "14rem" }}>
             Your memories are kept per wallet. Connect, then sign a message to unlock them. Signing moves no funds.
           </p>
-          <ConnectButton />
+          <div style={{ display: "flex", gap: "10rem", alignItems: "center", flexWrap: "wrap" }}>
+            <ConnectButton />
+            {session.address && <button className="btn" type="button" style={{ height: "40rem", padding: "0 16rem", fontSize: "14rem" }} onClick={() => { void kit.disconnectWallet(); }}>Disconnect</button>}
+          </div>
           {session.address && !session.signedIn && <button className="cta" style={{ marginTop: "14rem" }} onClick={() => session.signIn()} disabled={session.busy}>{session.busy ? "Waiting for your wallet…" : "Sign in to unlock"}</button>}
           {session.error && <p className="note warn" role="alert">{session.error}</p>}
           <div className="col-h" style={{ marginTop: "30rem" }}>Add a demo refusal</div>
