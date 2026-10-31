@@ -33,8 +33,9 @@ Built for the Tatum x Walrus Memory "Total Recall" hackathon. Tracks: Consumer F
 
 - Fixed weights, no model in the loop: the same inputs always give the same verdict, and a test pins it.
 - **Fails closed.** If Tatum or Memory is unreachable, the verdict is at least `reflection`, never a silent `normal`.
-- Sending is capped at 0.1 SUI, needs an acknowledgement above `normal`, and a passing dry run.
-- Public deployments refuse saving and sending, rate-limit per visitor, and hide memories labelled `real`.
+- **Visitors use their own wallet.** The server holds no spending key: it checks the send, builds an unsigned transfer, your wallet signs it, and Tatum broadcasts it. Sends are capped at 0.1 SUI, need an acknowledgement above `normal`, and a passing dry run.
+- **Memory is per wallet.** Sign a message once to unlock your own memories, kept in a separate Walrus Memory namespace; no one else's wallet can read them. They sit in the project's Walrus account, so the operator can read them: this is a demo, not a vault.
+- Requests are rate-limited per visitor.
 
 ## Walrus Memory writes on mainnet
 
@@ -59,7 +60,8 @@ Built for the Tatum x Walrus Memory "Total Recall" hackathon. Tracks: Consumer F
 
 - **These 12 entries are example decisions drafted with an AI assistant**, not reasons typed while deciding a live send. They are labelled `real` at the account owner's choice, so the public site hides them by design; the table above is the proof. Their script is [`scripts/seed-mainnet.ts`](scripts/seed-mainnet.ts) and the text is in [`src/lib/seed-data.ts`](src/lib/seed-data.ts).
 - The recorded run on `/app` is one genuine end-to-end run: a memory saved to Walrus (label `demo`, blob [`eutRS0w3RLXgPFFuGHPK5BcsCzr_Vs7PDP7PUaLQV0k`](https://walruscan.com/mainnet/blob/eutRS0w3RLXgPFFuGHPK5BcsCzr_Vs7PDP7PUaLQV0k)) and a 0.01 SUI testnet send through Tatum (digest `BB3vxaoX2AsfnoeDoHkddFZ6emrmTXi1XHDDubxXq1Po`). The page re-runs the engine over the recorded inputs; it does not replay stored verdicts.
-- The check page has a **testnet / mainnet toggle** for the Tatum reads (balance, history, dry run). Sending is testnet-only and off on the public site. Memory always uses Walrus's mainnet relayer (the staging relayer is down), so the same memories apply on either chain.
+- The check page has a **testnet / mainnet toggle**. It switches the Tatum reads and the network your wallet signs on. Memory always uses Walrus's mainnet relayer (the staging relayer is down), so the same memories apply on either chain. Mainnet sends have not been tested yet.
+- The 12 mainnet memories above were written to the project's own Walrus namespace as proof of the writes. Visitors get their own per-wallet namespaces, so they do not appear in the app.
 - Sui JSON-RPC is decommissioned, so Tatum is used through its native gRPC gateway. Free-plan limit is 3 requests/second; calls are paced and retried.
 - Memory recall is semantic only, so each decision is stored as a sentence plus a JSON line and matched in code.
 - Details of every verified result: [docs/spike-results.md](docs/spike-results.md).
@@ -68,7 +70,7 @@ Built for the Tatum x Walrus Memory "Total Recall" hackathon. Tracks: Consumer F
 
 ```bash
 pnpm install
-cp .env.example .env     # fill in TATUM_API_KEY, MEMWAL_ACCOUNT_ID, MEMWAL_DELEGATE_KEY, DEMO_WALLET_KEY
+cp .env.example .env     # fill in TATUM_API_KEY (+ TATUM_API_KEY_MAINNET), MEMWAL_ACCOUNT_ID, MEMWAL_DELEGATE_KEY
 pnpm dev                 # http://localhost:3000
 pnpm test                # 84 tests
 ```

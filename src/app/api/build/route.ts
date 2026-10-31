@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { buildTransfer } from "@/lib/chain";
-import { getRuntime } from "@/lib/runtime";
-import { checkSend, executeAllowed, publicView, sendGate } from "@/lib/service";
+import { emptyMemory, getMemory, getRuntime } from "@/lib/runtime";
+import { requestOwner } from "@/lib/session";
+import { checkSend, executeAllowed, sendGate } from "@/lib/service";
 import { createLimiter, limited } from "@/lib/ratelimit";
 
 export const runtime = "nodejs";
@@ -28,11 +29,12 @@ export async function POST(req: Request) {
   if (!parsed.success) return Response.json({ error: "invalid input" }, { status: 400 });
   const { sender, recipient, amount, acknowledged, hour, network } = parsed.data;
   try {
+    const owner = requestOwner(req);
     const rt = getRuntime(network);
     // The browser's earlier verdict is not trusted: check again before offering anything to sign.
     const check = await checkSend(
       { sender, recipient, amount },
-      { source: rt.source, mem: rt.mem, hour: () => hour ?? new Date().getUTCHours(), publicView: publicView(process.env) },
+      { source: rt.source, mem: owner ? getMemory(owner) : emptyMemory(), hour: () => hour ?? new Date().getUTCHours(), publicView: false },
     );
     const gate = sendGate({ level: check.verdict.level, amount, acknowledged, executeOn, dryRunOk: check.facts?.dryRunOk ?? false });
     if (!gate.ok) return Response.json({ error: gate.reason, level: check.verdict.level }, { status: gate.status });

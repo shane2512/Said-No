@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
-import { getRuntime } from "@/lib/runtime";
+import { getMemory } from "@/lib/runtime";
+import { requestOwner } from "@/lib/session";
 import { recordDecision, writesAllowed } from "@/lib/service";
 
 import { createLimiter, limited } from "@/lib/ratelimit";
@@ -32,12 +33,13 @@ export async function POST(req: Request) {
   const tooMany = limited(decideLimit, req);
   if (tooMany) return tooMany;
   if (!writesAllowed(process.env)) return Response.json({ error: "Saving decisions is off on this deployment." }, { status: 403 });
+  const owner = requestOwner(req);
+  if (!owner) return Response.json({ error: "Sign in with your wallet to save decisions." }, { status: 401 });
   const parsed = body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: "invalid input" }, { status: 400 });
   try {
-    const rt = getRuntime();
     const out = await recordDecision(parsed.data, {
-      mem: rt.mem,
+      mem: getMemory(owner),
       now: () => Math.floor(Date.now() / 1000),
       newId: () => randomUUID(),
     });

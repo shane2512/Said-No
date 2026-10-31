@@ -81,9 +81,9 @@ export default function DocsPage() {
               <tbody>
                 <tr><td><code>GET /api/status</code></td><td>Network, memory backend, what is enabled</td><td>None</td></tr>
                 <tr><td><code>POST /api/check</code></td><td>Verdict, chain facts, request log. Sends nothing.</td><td><code>recipient, amount, hour?</code></td></tr>
-                <tr><td><code>POST /api/decide</code></td><td>Saves a decision. Returns a job, about 25 s on Walrus.</td><td><code>action, recipient, amount, reason, kind, features, source?, target?</code></td></tr>
-                <tr><td><code>GET /api/jobs/:id</code></td><td>Blob id once saved; 202 until then</td><td>None</td></tr>
-                <tr><td><code>GET /api/memories</code></td><td>Recalled decisions, the count of unreadable ones, and the real count. Real entries are hidden on a public deployment.</td><td>None</td></tr>
+                <tr><td><code>POST /api/decide</code></td><td>Saves a decision to the signed-in wallet's own memory. Returns a job, about 25 s on Walrus.</td><td><code>Bearer token; action, recipient, amount, reason, kind, features, source?, target?</code></td></tr>
+                <tr><td><code>GET /api/jobs/:id</code></td><td>Blob id once saved; 202 until then</td><td>Bearer token</td></tr>
+                <tr><td><code>GET /api/memories</code></td><td>The signed-in wallet's own decisions and the count of unreadable ones. Empty without a token.</td><td>Bearer token</td></tr>
                 <tr><td><code>POST /api/send</code></td><td>Re-checks on the server, then executes. Needs <code>ALLOW_EXECUTE=true</code>, 0.1 SUI maximum.</td><td><code>recipient, amount, acknowledged, hour?</code></td></tr>
               </tbody>
             </table>
@@ -99,7 +99,7 @@ pnpm install
 pnpm test
 pnpm dev -p 3200       # real Walrus Memory: writes go to mainnet
 node scripts/dev-local.mjs 3201   # local memory: nothing leaves the machine`}</pre>
-            <p>Saving decisions is off in production unless <code>ALLOW_WRITES=true</code>, and sending is off unless <code>ALLOW_EXECUTE=true</code>, so a public visitor can never write to your memory account or spend from the demo wallet.</p>
+            <p>Visitors use their own wallet. The server holds no key that can spend: it checks the send, builds an unsigned transfer, and broadcasts what the visitor's wallet signed. Each wallet signs a message to unlock its own memories, kept in a separate Walrus Memory namespace. <code>ALLOW_WRITES</code> and <code>ALLOW_EXECUTE</code> switch saving and sending off for a read-only deployment.</p>
           </section>
 
           <section id="honest">

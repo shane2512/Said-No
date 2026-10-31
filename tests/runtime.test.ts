@@ -19,9 +19,17 @@ describe("getRuntime per network", () => {
     expect(t.network).toBe("testnet");
     expect(m.network).toBe("mainnet");
     expect(m.client).not.toBe(t.client);
-    expect(m.mem).toBe(t.mem);
   });
   it("caches each network", () => {
     expect(getRuntime("mainnet")).toBe(getRuntime("mainnet"));
+  });
+});
+
+import { getMemory } from "@/lib/runtime";
+describe("getMemory per wallet", () => {
+  it("gives each wallet its own memory and the same wallet the same one", () => {
+    const a = getMemory("0xa");
+    expect(getMemory("0xa")).toBe(a);
+    expect(getMemory("0xb")).not.toBe(a);
   });
 });

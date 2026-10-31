@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { getRuntime } from "@/lib/runtime";
-import { checkSend, publicView } from "@/lib/service";
+import { emptyMemory, getMemory, getRuntime } from "@/lib/runtime";
+import { requestOwner } from "@/lib/session";
+import { checkSend } from "@/lib/service";
 
 import { createLimiter, limited } from "@/lib/ratelimit";
 
@@ -23,10 +24,11 @@ export async function POST(req: Request) {
   if (!parsed.success) return Response.json({ error: "invalid input" }, { status: 400 });
   const { sender, recipient, amount, hour, network } = parsed.data;
   try {
+    const owner = requestOwner(req);
     const rt = getRuntime(network);
     const result = await checkSend(
       { sender, recipient, amount },
-      { source: rt.source, mem: rt.mem, hour: () => hour ?? new Date().getUTCHours(), publicView: publicView(process.env) },
+      { source: rt.source, mem: owner ? getMemory(owner) : emptyMemory(), hour: () => hour ?? new Date().getUTCHours(), publicView: false },
     );
     return Response.json({ network: rt.network, memory: rt.memory, sender, ...result });
   } catch (e) {

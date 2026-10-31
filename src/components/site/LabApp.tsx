@@ -2,7 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Corners, Display } from "../landing/Display";
-import { blobUrl, getStatus, postJson, short, waitForBlob, when, type Decision, type Status } from "./api";
+import { DAppKitProvider } from "@mysten/dapp-kit-react";
+import { ConnectButton } from "@mysten/dapp-kit-react/ui";
+import { authHeaders, blobUrl, getStatus, postJson, short, waitForBlob, when, type Decision, type Status } from "./api";
+import { dAppKit } from "./wallet";
+import { useSession } from "./useSession";
 import Shell from "./Shell";
 
 const PRESETS: { label: string; reason: string; recipient: string; amount: number; kind: Decision["kind"]; features: Decision["features"] }[] = [
@@ -13,6 +17,15 @@ const PRESETS: { label: string; reason: string; recipient: string; amount: numbe
 ];
 
 export default function LabApp() {
+  return (
+    <DAppKitProvider dAppKit={dAppKit}>
+      <LabInner />
+    </DAppKitProvider>
+  );
+}
+
+function LabInner() {
+  const session = useSession();
   const [status, setStatus] = useState<Status | null>(null);
   const [items, setItems] = useState<Decision[] | null>(null);
   const [ignored, setIgnored] = useState(0);
@@ -22,7 +35,7 @@ export default function LabApp() {
   const [msg, setMsg] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
 
   const load = useCallback(async () => {
-    const r = await fetch("/api/memories").catch(() => null);
+    const r = await fetch("/api/memories", { headers: authHeaders() }).catch(() => null);
     if (!r?.ok) return setLoadErr(true);
     const data = await r.json();
     setLoadErr(false);
@@ -31,7 +44,8 @@ export default function LabApp() {
     setRealCount(data.realCount ?? 0);
   }, []);
 
-  useEffect(() => { getStatus().then(setStatus); load(); }, [load]);
+  useEffect(() => { getStatus().then(setStatus); }, []);
+  useEffect(() => { if (session.signedIn) load(); else setItems(null); }, [load, session.signedIn]);
 
   async function write(body: Record<string, unknown>, label: string, done: string) {
     setBusy(label);
@@ -77,7 +91,14 @@ export default function LabApp() {
 
       <div className="row row-line">
         <div className="col">
-          <div className="col-h">Add a demo refusal</div>
+          <div className="col-h">Your wallet</div>
+          <p style={{ fontSize: "15.5rem", lineHeight: "24rem", color: "var(--muted)", marginBottom: "14rem" }}>
+            Your memories are kept per wallet. Connect, then sign a message to unlock them. Signing moves no funds.
+          </p>
+          <ConnectButton />
+          {session.address && !session.signedIn && <button className="cta" style={{ marginTop: "14rem" }} onClick={() => session.signIn()} disabled={session.busy}>{session.busy ? "Waiting for your wallet…" : "Sign in to unlock"}</button>}
+          {session.error && <p className="note warn" role="alert">{session.error}</p>}
+          <div className="col-h" style={{ marginTop: "30rem" }}>Add a demo refusal</div>
           <p style={{ fontSize: "15.5rem", lineHeight: "24rem", color: "var(--muted)", marginBottom: "20rem" }}>
             {isLocal
               ? "This server keeps memories locally. They are not on Walrus and disappear on restart."
@@ -85,7 +106,7 @@ export default function LabApp() {
           </p>
           <div>
             {PRESETS.map((p) => (
-              <button className="scen" key={p.label} onClick={() => addPreset(p)} disabled={!!busy || !canWrite}>
+              <button className="scen" key={p.label} onClick={() => addPreset(p)} disabled={!!busy || !canWrite || !session.signedIn}>
                 <Corners />{p.label}<small>{p.amount} SUI, {p.kind} memory</small>
               </button>
             ))}

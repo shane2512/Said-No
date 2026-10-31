@@ -43,15 +43,20 @@ export async function getStatus(): Promise<Status | null> {
   return r?.ok ? r.json() : null;
 }
 
+let authToken: string | null = null;
+/** The signed-in wallet's token, sent with every request so the server can find that wallet's memories. */
+export const setAuthToken = (t: string | null) => { authToken = t; };
+export const authHeaders = (): Record<string, string> => (authToken ? { authorization: `Bearer ${authToken}` } : {});
+
 export async function postJson(url: string, body: unknown) {
-  const res = await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+  const res = await fetch(url, { method: "POST", headers: { "content-type": "application/json", ...authHeaders() }, body: JSON.stringify(body) });
   return { status: res.status, data: await res.json().catch(() => ({})) };
 }
 
 /** Writes take about 25 s on the relayer. Resolves with the blob id, or null if it never lands. */
 export async function waitForBlob(jobId: string, tries = 8): Promise<string | null> {
   for (let i = 0; i < tries; i++) {
-    const res = await fetch(`/api/jobs/${encodeURIComponent(jobId)}`).catch(() => null);
+    const res = await fetch(`/api/jobs/${encodeURIComponent(jobId)}`, { headers: authHeaders() }).catch(() => null);
     if (res?.status === 200) return (await res.json()).blobId as string;
     await new Promise((r) => setTimeout(r, 2500));
   }

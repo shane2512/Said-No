@@ -4,6 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { DAppKitProvider, useCurrentAccount, useDAppKit } from "@mysten/dapp-kit-react";
 import { ConnectButton } from "@mysten/dapp-kit-react/ui";
 import { dAppKit } from "./wallet";
+import { useSession } from "./useSession";
 import { Corners, Display } from "../landing/Display";
 import { blobUrl, getStatus, LEVELS, postJson, short, waitForBlob, when, type CheckResponse, type Decision, type Status } from "./api";
 import RecordedRun from "./RecordedRun";
@@ -28,6 +29,7 @@ export default function CheckApp() {
 function CheckInner() {
   const account = useCurrentAccount();
   const kit = useDAppKit();
+  const session = useSession();
   const sender = account?.address;
   const [status, setStatus] = useState<Status | null>(null);
   const [recipient, setRecipient] = useState("");
@@ -47,7 +49,11 @@ function CheckInner() {
   const [picked, setPicked] = useState<Status["network"] | null>(null);
   const net = picked ?? status?.network ?? "testnet";
 
-  useEffect(() => { getStatus().then(setStatus); }, []);
+  useEffect(() => {
+    getStatus().then(setStatus);
+    const to = new URLSearchParams(window.location.search).get("to");
+    if (to && /^0x[0-9a-fA-F]{1,64}$/.test(to)) setRecipient(to);
+  }, []);
 
   async function runCheck(override?: { recipient: string; amount: number; hour?: number }) {
     const to = (override?.recipient ?? recipient).trim();
@@ -55,6 +61,7 @@ function CheckInner() {
     if (!/^0x[0-9a-fA-F]{1,64}$/.test(to)) return setFormErr("Enter a Sui address starting with 0x.");
     if (!Number.isFinite(amt) || amt <= 0) return setFormErr("Enter an amount above 0.");
     if (!sender) return setFormErr("Connect your wallet first. Checks use your own address.");
+    if (!(await session.signIn())) return setFormErr("Sign in with your wallet so your own memories can be recalled. Signing moves no funds.");
     setFormErr("");
     setBusy(true);
     setCheckErr("");
@@ -185,6 +192,7 @@ function CheckInner() {
           <div className="stat-r"><span>Memory</span><span className={status?.memory === "local" ? "warn" : undefined}>{status ? (status.memory === "local" ? "Local, not Walrus" : "Walrus mainnet") : "…"}</span></div>
           <div className="stat-r"><span>Execution</span><span>{status ? (status.executeOn ? `On, max ${status.maxSend} SUI` : "Off") : "…"}</span></div>
           <div className="stat-r"><span>Wallet</span><span>{sender ? short(sender) : "Not connected"}</span></div>
+          <div className="stat-r"><span>Your memory</span><span>{session.signedIn ? "Unlocked" : "Locked"}</span></div>
           <div style={{ marginTop: "12rem" }}><ConnectButton /></div>
         </div>
       </div>

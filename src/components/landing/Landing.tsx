@@ -70,19 +70,9 @@ function CheckForm() {
       setState({ tone: "err", msg: "That does not look like a Sui address. It should start with 0x." });
       return;
     }
-    setState({ tone: "busy", msg: "Reading the chain through Tatum and recalling your memory…" });
-    try {
-      const res = await fetch("/api/check", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ recipient: address.trim(), amount: 1 }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "check failed");
-      setState({ tone: "ok", msg: `${data.verdict.level}: ${data.verdict.reasons[0] ?? ""} (${data.network}, 1 SUI, nothing sent)` });
-    } catch {
-      setState({ tone: "err", msg: "The check is unavailable right now, so we would treat this send as Reflection." });
-    }
+    // The check runs against your own wallet, so it happens on the app page after you connect.
+    setState({ tone: "busy", msg: "Opening the check. Connect your wallet there." });
+    window.location.href = `/app?to=${encodeURIComponent(address.trim())}`;
   }
 
   return (
