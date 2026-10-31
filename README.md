@@ -36,7 +36,6 @@ Built for the **Tatum x Walrus Memory "Total Recall" hackathon**. Tracks: **Cons
 - [Security and privacy](#security-and-privacy)
 - [Honest limits](#honest-limits)
 - [Roadmap](#roadmap)
-- [Brand kit](#brand-kit)
 - [License and acknowledgements](#license-and-acknowledgements)
 
 ---
@@ -294,16 +293,10 @@ Ideas, not promises:
 - Import and export of a wallet's memories.
 - Reason-aware matching, so a refusal can generalise beyond the exact recipient.
 
-## Brand kit
-
-Logos, posters and the brand board are in [`brand/`](brand/). Rebuild them with `node scripts/brand/build.mjs`. The mark is an octagon (the stop sign), crossed by a slash (the refusal), with a small block (the memory that stays).
-
-<p align="center"><img src="brand/png/brand-board.png" alt="Said-No brand board" width="900"></p>
-
-Logos of third-party technologies are trademarks of their owners and are shown only to name what was used.
-
 ## License and acknowledgements
 
 MIT. See [LICENSE](LICENSE).
+
+Logos, posters and the brand board are in [`brand/`](brand/). Third-party logos are trademarks of their owners and are shown only to name the technologies used.
 
 Thanks to **Tatum** for the Sui gRPC gateway, **Walrus** and Mysten Labs for Walrus Memory and the Sui SDKs, and the organisers of the Total Recall hackathon.
