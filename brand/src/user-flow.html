@@ -1,0 +1,51 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Said-No user flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;background:#0e0e0e;color:#f0f0ee;font-family:'Roboto Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;overflow:hidden}
+.grid{position:absolute;inset:0;background-image:linear-gradient(#1b1b1b 1px,transparent 1px),linear-gradient(90deg,#1b1b1b 1px,transparent 1px);background-size:120px 120px;opacity:.7}
+.abs{position:absolute}
+.o{color:#ff7120}
+.muted{color:#8d8d8d}
+.label{font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:#8d8d8d}
+.card{background:#1b1b1b;border:1px solid #414144}
+.corner{position:absolute;width:14px;height:14px;border-color:#f0f0ee;border-style:solid;border-width:0}
+.st{background:#1b1b1b;border:1px solid #414144;padding:26px 26px 28px;flex:1;position:relative}
+.st.hi{border-color:#ff7120}
+.st.wide{flex:1.25}
+.st.br{flex:1}
+.n{font-size:14px;letter-spacing:.14em;color:#ff7120;margin-bottom:14px}
+.t{font-size:27px;font-weight:700;line-height:1.2;margin-bottom:12px}
+.b{font-size:17px;line-height:1.55;color:#c9c9c6}
+.b b{color:#f0f0ee}
+.ar{width:70px;display:flex;align-items:center;justify-content:center}
+.ladder{display:flex;gap:8px;margin:6px 0 16px}
+.ladder span{flex:1;text-align:center;padding:12px 4px;border:1px solid #414144;font-size:13px;letter-spacing:.08em;color:#8d8d8d}
+.ladder span.hl{border-color:#ff7120;color:#ff7120}
+</style></head><body><div class="grid"></div>
+<div class="abs" style="left:96px;top:72px;display:flex;align-items:center;gap:20px"><div style="width:48px;height:48px"><svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><polygon points="108.04,79.90 79.90,108.04 40.10,108.04 11.96,79.90 11.96,40.10 40.10,11.96 79.90,11.96 108.04,40.10" fill="none" stroke="#f0f0ee" stroke-width="7" stroke-linejoin="miter"/><line x1="24" y1="24" x2="96" y2="96" stroke="#ff7120" stroke-width="10"/><rect x="70" y="34" width="15" height="15" fill="#f0f0ee"/></svg></div><div style="font-size:48px;font-weight:700;letter-spacing:-.01em">How a send is checked</div></div>
+<div class="abs label" style="right:96px;top:90px">Said-No · User flow</div>
+
+<div class="abs" style="left:96px;top:190px;width:1728px;display:flex;align-items:stretch;justify-content:space-between">
+  <div class="st"><div class="n">01</div><div class="t">Connect</div><div class="b">Your own Sui wallet, on testnet or mainnet. The server holds no spending key.</div></div><div class="ar"><svg width="54" height="24" viewBox="0 0 54 24"><line x1="0" y1="12" x2="46" y2="12" stroke="#8d8d8d" stroke-width="2"/><polyline points="38,4 48,12 38,20" fill="none" stroke="#8d8d8d" stroke-width="2"/></svg></div>
+  <div class="st"><div class="n">02</div><div class="t">Sign in</div><div class="b">Sign a message once. It moves no funds. It unlocks your memories only.</div></div><div class="ar"><svg width="54" height="24" viewBox="0 0 54 24"><line x1="0" y1="12" x2="46" y2="12" stroke="#8d8d8d" stroke-width="2"/><polyline points="38,4 48,12 38,20" fill="none" stroke="#8d8d8d" stroke-width="2"/></svg></div>
+  <div class="st"><div class="n">03</div><div class="t">Enter a send</div><div class="b">Recipient and amount. Nothing is sent yet.</div></div><div class="ar"><svg width="54" height="24" viewBox="0 0 54 24"><line x1="0" y1="12" x2="46" y2="12" stroke="#8d8d8d" stroke-width="2"/><polyline points="38,4 48,12 38,20" fill="none" stroke="#8d8d8d" stroke-width="2"/></svg></div>
+  <div class="st hi"><div class="n">04</div><div class="t">Gather evidence</div><div class="b"><b>Tatum gRPC</b>: balance, your history, dry run.<br><b>Walrus Memory</b>: your past refusals, recalled.</div></div>
+</div>
+
+<div class="abs" style="left:96px;top:470px;width:1728px;display:flex;align-items:stretch;justify-content:space-between">
+  <div class="st wide"><div class="n">05</div><div class="t">The engine decides</div>
+    <div class="ladder"><span>NORMAL</span><span>REMINDER</span><span class="hl">REFLECTION</span><span>HOLD</span></div>
+    <div class="b">Fixed weights: recipient .35, amount .30, hour .20, history .15. If Tatum or Memory fails, the answer is at least Reflection. Your own reason is quoted back, with the counterfactual.</div>
+    <div class="b" style="margin-top:22px;padding-top:20px;border-top:1px solid #414144"><b>Hold</b> needs a "never this address" memory, or two matching refusals at 0.85 or higher. Approvals count too: approve more than you refused, and the friction drops.</div></div>
+  <div style="width:70px"></div>
+  <div style="display:flex;flex-direction:column;gap:22px;flex:1">
+    <div class="st br"><div class="n">06A · Deny</div><div class="t">Say why</div><div class="b">Type your reason. It is saved to Walrus Memory in about 25 seconds, and the blob ID is your receipt.</div></div>
+    <div class="st br"><div class="n">06B · Proceed</div><div class="t">Wallet signs, Tatum broadcasts</div><div class="b">Server builds the transfer, <b>your wallet signs it</b>, Tatum sends it. Your approval is remembered too.</div></div>
+  </div>
+</div>
+
+<div class="abs" style="left:96px;right:96px;bottom:60px;border:1px dashed #ff7120;padding:22px 28px;display:flex;justify-content:space-between;align-items:center">
+  <div style="font-size:24px"><span class="o">↺</span> The next time a similar send comes up, step 04 recalls what you saved in step 06.</div>
+  <div class="muted" style="font-size:16px;letter-spacing:.1em">FORGET OR OVERRIDE ANY MEMORY, ANY TIME</div>
+</div></body></html>
