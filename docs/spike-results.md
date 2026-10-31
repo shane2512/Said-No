@@ -73,3 +73,12 @@ Label `real` was chosen by the account owner. The reasons were drafted by the as
 ## 2026-10-31 Wallet flow on the live site
 - Visitors connect their own wallet. `/api/build` (re-checks, builds an unsigned transfer) → wallet signs → `/api/broadcast` (Tatum ExecuteTransaction). Live testnet run with a key standing in for the wallet: digest `ARM89U3zryGyfMXNUMkeNkZF12aE4m4Cy4aAPquN9yRf`.
 - Per-wallet memory with signed sign-in. A live two-wallet test against real Walrus caught a namespace leak (explicit `decisions` namespace overrode the wallet's own); fixed in `88212a4`, then 9/9 isolation checks passed live. One test memory ("wallet A private reason") remains in the shared `decisions` namespace from that run.
+
+## 2026-10-31 Mainnet audit
+- Config: Tatum gRPC `sui-mainnet-grpc.gateway.tatum.io`, mainnet key used when the network is mainnet; Memory always on the mainnet relayer. No secrets tracked in git; `.env` ignored.
+- Live site `/api/status`: network mainnet, memory walrus.
+- Live mainnet `/api/check` with a public funded address (a stranger's, read-only, never signed): balance read correctly, dry run ok, calls 18-143 ms.
+- Live mainnet `/api/build` (unsigned): returned a transaction. 5 SUI request refused by the 0.1 SUI cap. Garbage `/api/broadcast` refused by the node. Nothing was signed or broadcast.
+- History on mainnet: `listOutgoing` parsed 20 plain transfers for a real sender. An address that only makes contract calls correctly shows none.
+- Walrus: all 12 mainnet-01..12 blobs, plus the demo blob, answer 200 on the mainnet aggregator.
+- NOT done: a mainnet send (needs the user's own wallet with real SUI).
