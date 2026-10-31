@@ -216,6 +216,8 @@ pnpm build
 | `MEMWAL_ACCOUNT_ID` | yes | Walrus Memory account object ID. |
 | `MEMWAL_DELEGATE_KEY` | yes | Delegate private key. Server only. Never commit it. |
 | `SESSION_SECRET` | no | Signs wallet sessions. Falls back to the delegate key. |
+| `NEXT_PUBLIC_DAPP_NAME` | no | App name shown by the Slush wallet when connecting. Defaults to `Said-No`; keep it equal to the page title and deployment name. |
+| `NEXT_PUBLIC_SITE_URL` | no | Public URL of the deployment (metadata and wallet identity). Defaults to `https://said-no.vercel.app`. |
 | `ALLOW_EXECUTE` | no | `true` lets the server build and broadcast sends. |
 | `ALLOW_WRITES` | no | `true` lets visitors save decisions in production. Defaults on outside production. |
 | `MEMORY_BACKEND` | no | `local` keeps decisions in process instead of Walrus. |

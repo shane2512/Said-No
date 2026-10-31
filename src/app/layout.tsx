@@ -1,13 +1,11 @@
 import { Roboto_Mono } from "next/font/google";
+import { siteMetadata } from "@/lib/identity";
 import "@/components/landing/landing.css";
 import "@/components/site/site.css";
 
 const mono = Roboto_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
 
-export const metadata = {
-  title: "Said-No",
-  description: "Most wallets remember approvals. Said-No remembers the sends you rejected.",
-};
+export const metadata = siteMetadata;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
