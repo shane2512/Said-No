@@ -69,3 +69,7 @@ Label `real` was chosen by the account owner. The reasons were drafted by the as
 | mainnet-10 | qZCafu7p7nMGTvpmeBBeHcBt6AxgiDL0Oz6WynDse7I |
 | mainnet-11 | I9PI0ts-e3CVv2XV2FIGX2-DlpKefRkYSs5ZlWr_RYk |
 | mainnet-12 | WokGBWkO1fQuz17MkscRPUOHbPLMhqifca1-IABhlas (delete of mainnet-04) |
+
+## 2026-10-31 Wallet flow on the live site
+- Visitors connect their own wallet. `/api/build` (re-checks, builds an unsigned transfer) → wallet signs → `/api/broadcast` (Tatum ExecuteTransaction). Live testnet run with a key standing in for the wallet: digest `ARM89U3zryGyfMXNUMkeNkZF12aE4m4Cy4aAPquN9yRf`.
+- Per-wallet memory with signed sign-in. A live two-wallet test against real Walrus caught a namespace leak (explicit `decisions` namespace overrode the wallet's own); fixed in `88212a4`, then 9/9 isolation checks passed live. One test memory ("wallet A private reason") remains in the shared `decisions` namespace from that run.
