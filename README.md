@@ -6,7 +6,7 @@
 
 **A personal consent firewall for Sui. It remembers the sends you refused, quotes your own reasons back, and adds friction in proportion to how much a new send resembles them.**
 
-[Live demo](https://said-no.vercel.app) · [Memory Lab](https://said-no.vercel.app/lab) · [Docs](https://said-no.vercel.app/docs) · [Blog post](docs/blog-post.md) · [Walrus mainnet proof](#walrus-memory-writes-on-mainnet)
+[Live demo](https://said-no.live) · [Memory Lab](https://said-no.live/lab) · [Docs](https://said-no.live/docs) · [Blog post](docs/blog-post.md) · [Walrus mainnet proof](#walrus-memory-writes-on-mainnet)
 
 ![Tests](https://img.shields.io/badge/tests-92%20passing-2ea44f) ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6) ![Network](https://img.shields.io/badge/Sui-testnet%20%2B%20mainnet-4DA2FF) ![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
@@ -217,7 +217,7 @@ pnpm build
 | `MEMWAL_DELEGATE_KEY` | yes | Delegate private key. Server only. Never commit it. |
 | `SESSION_SECRET` | no | Signs wallet sessions. Falls back to the delegate key. |
 | `NEXT_PUBLIC_DAPP_NAME` | no | App name shown by the Slush wallet when connecting. Defaults to `Said-No`; keep it equal to the page title and deployment name. |
-| `NEXT_PUBLIC_SITE_URL` | no | Public URL of the deployment (metadata and wallet identity). Defaults to `https://said-no.vercel.app`. |
+| `NEXT_PUBLIC_SITE_URL` | no | Public URL of the deployment (metadata and wallet identity). Defaults to `https://said-no.live`. |
 | `ALLOW_EXECUTE` | no | `true` lets the server build and broadcast sends. |
 | `ALLOW_WRITES` | no | `true` lets visitors save decisions in production. Defaults on outside production. |
 | `MEMORY_BACKEND` | no | `local` keeps decisions in process instead of Walrus. |
@@ -237,7 +237,7 @@ Never prefix any of these with `NEXT_PUBLIC_`. To copy a local `.env` to Vercel,
 | `POST /api/broadcast` | Submit a wallet-signed transaction through Tatum | None |
 | `GET /api/status` | What this deployment can do. No secrets | None |
 
-All routes except `/api/status` are rate-limited per visitor. Full details are at [`/docs`](https://said-no.vercel.app/docs).
+All routes except `/api/status` are rate-limited per visitor. Full details are at [`/docs`](https://said-no.live/docs).
 
 ## Project structure
 

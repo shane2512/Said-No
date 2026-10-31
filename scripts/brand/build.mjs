@@ -87,7 +87,7 @@ const poster = page(
 
 <div class="abs" style="left:96px;right:96px;bottom:72px;display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid ${C.line};padding-top:26px">
   <div style="display:flex;gap:44px;font-size:18px;letter-spacing:.1em" class="muted"><span>CHAIN FACTS · TATUM gRPC</span><span>MEMORY · WALRUS</span><span>FAILS CLOSED</span></div>
-  <div style="font-size:18px;letter-spacing:.08em">said-no.vercel.app</div>
+  <div style="font-size:18px;letter-spacing:.08em">said-no.live</div>
 </div>`,
 );
 

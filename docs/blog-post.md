@@ -50,4 +50,4 @@ Memory is only useful if it is correct. Three bugs taught us that:
 
 ## Try it
 
-Live demo: https://said-no.vercel.app. Connect a Sui wallet on `/app`, deny a send with a reason, then check the same send again.
+Live demo: https://said-no.live. Connect a Sui wallet on `/app`, deny a send with a reason, then check the same send again.
