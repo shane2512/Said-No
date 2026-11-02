@@ -34,6 +34,7 @@ function CheckInner() {
   const [status, setStatus] = useState<Status | null>(null);
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("0.5");
+  const [note, setNote] = useState("");
   const [hour, setHour] = useState<number | undefined>(undefined);
   const [formErr, setFormErr] = useState("");
   const [busy, setBusy] = useState(false);
@@ -79,7 +80,7 @@ function CheckInner() {
     setDenying(false);
     try {
       const h = override ? override.hour : hour;
-      const { status: code, data } = await postJson("/api/check", { sender, recipient: to, amount: amt, hour: h ?? new Date().getHours(), network: net });
+      const { status: code, data } = await postJson("/api/check", { sender, recipient: to, amount: amt, hour: h ?? new Date().getHours(), network: net, note: note.trim() || undefined });
       if (code !== 200) throw new Error(data.detail ?? data.error ?? "check failed");
       setRes(data);
     } catch {
@@ -221,6 +222,9 @@ function CheckInner() {
             <label className="fld"><span>Amount (SUI)</span>
               <input value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" />
             </label>
+            <label className="fld"><span>What is it for? (optional)</span>
+              <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. a stranger says the offer ends today" maxLength={200} />
+            </label>
             {formErr && <p className="err" role="alert">{formErr}</p>}
             <button className="cta" type="submit" disabled={busy}>{busy ? "Checking…" : "Run the check"}</button>
           </form>
@@ -354,6 +358,7 @@ interaction  ${best.parts.interaction.toFixed(2)}  [${res.weights.interaction.to
               <div className="fact"><span>Recipient</span><span>{f.priorToRecipient === 0 ? "New to you" : `${f.priorToRecipient} past sends`}</span></div>
               <div className="fact"><span>Your usual send</span><span>{f.medianAmount > 0 ? `${f.medianAmount} SUI` : "No history yet"}</span></div>
               <div className="fact"><span>Sends counted</span><span>{f.priorTxCount >= 50 ? "50+" : f.priorTxCount}</span></div>
+              <div className="fact"><span>Scam list</span><span className={f.screen.status === "flagged" ? "warn" : undefined}>{f.screen.status === "flagged" ? "Flagged" : f.screen.status === "clear" ? "Not listed" : "Not checked"}</span></div>
               <div className="fact"><span>Dry-run</span><span className={f.dryRunOk ? undefined : "warn"}>{f.dryRunOk ? "Would succeed" : "Would fail"}</span></div>
               <p style={{ color: "var(--muted)", fontSize: "13.5rem", lineHeight: "20rem", margin: "6rem 0 22rem" }}>History starts at the node&apos;s earliest available data, so it may be incomplete.</p>
             </>

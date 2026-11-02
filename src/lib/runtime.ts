@@ -32,8 +32,9 @@ export function getRuntime(network?: string): Runtime {
   const cfg = getNetworkConfig(network ?? clean(env.NETWORK));
   const cached = s.byNetwork[cfg.network];
   if (cached) return cached;
-  const client = createTatumClient(cfg, clean(cfg.network === "mainnet" ? env.TATUM_API_KEY_MAINNET || env.TATUM_API_KEY : env.TATUM_API_KEY));
-  const rt: Runtime = { network: cfg.network, memory: isLocal() ? "local" : "walrus", client, source: createGrpcChainSource(client) };
+  const apiKey = clean(cfg.network === "mainnet" ? env.TATUM_API_KEY_MAINNET || env.TATUM_API_KEY : env.TATUM_API_KEY);
+  const client = createTatumClient(cfg, apiKey);
+  const rt: Runtime = { network: cfg.network, memory: isLocal() ? "local" : "walrus", client, source: createGrpcChainSource(client, apiKey) };
   s.byNetwork[cfg.network] = rt;
   return rt;
 }

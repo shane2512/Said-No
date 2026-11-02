@@ -82,7 +82,7 @@ function digestOf(r: unknown): string {
   return out.Transaction.digest;
 }
 
-export function createGrpcChainSource(client: SuiGrpcClient): ChainSource {
+export function createGrpcChainSource(client: SuiGrpcClient, apiKey = ""): ChainSource {
   // Full nodes prune old checkpoints; scanning from genesis errors, so start at the lowest available one.
   let lowest: { value: bigint; at: number } | undefined;
   async function lowestAvailableCheckpoint(): Promise<bigint | undefined> {
@@ -94,6 +94,14 @@ export function createGrpcChainSource(client: SuiGrpcClient): ChainSource {
   }
 
   return {
+    // Tatum's list is matched by address across chains (GET /v3/security/address/{address}), and it accepts Sui-format addresses.
+    async screen(address) {
+      const res = await fetch(`https://api.tatum.io/v3/security/address/${encodeURIComponent(address)}`, { headers: { "x-api-key": apiKey } });
+      if (!res.ok) throw Object.assign(new Error(`screen ${res.status}`), { status: res.status });
+      const body = (await res.json()) as { status?: string; description?: string; source?: string };
+      return { flagged: body.status === "invalid", why: [body.description, body.source].filter(Boolean).join(" · ") || undefined };
+    },
+
     async getBalance(owner) {
       const b = await client.core.getBalance({ owner });
       return Number(BigInt(b.balance.balance)) / MIST_PER_SUI;

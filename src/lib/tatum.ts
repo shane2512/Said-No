@@ -5,6 +5,8 @@ export type ChainSource = {
   getBalance(owner: string): Promise<number>;
   listOutgoing(sender: string, max: number): Promise<{ recipient: string; amount: number; ts: number }[]>;
   dryRun(sender: string, recipient: string, amount: number): Promise<boolean>;
+  /** Tatum's malicious-address list. Optional: a source without it leaves the address unscreened. */
+  screen?(address: string): Promise<{ flagged: boolean; why?: string }>;
 };
 
 export type ChainFacts = {
@@ -14,6 +16,8 @@ export type ChainFacts = {
   priorToRecipient: number;
   /** Sends in the last hour, for spotting a rapid burst. */
   recentSends: number;
+  /** "flagged" if Tatum lists the recipient as malicious; "unscreened" if the check could not run. */
+  screen: { status: "clear" | "flagged" | "unscreened"; why?: string };
   dryRunOk: boolean;
   requestLog: RequestLogEntry[];
 };
@@ -85,12 +89,23 @@ export async function getChainFacts(
     const balance = await call("getBalance", () => source.getBalance(sender));
     const history = await call("listOutgoing", () => source.listOutgoing(sender, HISTORY_CAP));
     const dryRunOk = await call("dryRun", () => source.dryRun(sender, recipient, amount));
+    // Screening is extra safety, so if it cannot run the send is still checked, just marked unscreened.
+    let screen: ChainFacts["screen"] = { status: "unscreened" };
+    if (source.screen) {
+      try {
+        const r = await call("screen", () => source.screen!(recipient));
+        screen = r.flagged ? { status: "flagged", why: r.why } : { status: "clear" };
+      } catch {
+        /* stays unscreened */
+      }
+    }
     return {
       balance,
       medianAmount: median(history.map((h) => h.amount)),
       priorTxCount: history.length,
       priorToRecipient: history.filter((h) => h.recipient === recipient).length,
       recentSends: history.filter((h) => h.ts <= now() / 1000 && h.ts >= now() / 1000 - 3600).length,
+      screen,
       dryRunOk,
       requestLog,
     };

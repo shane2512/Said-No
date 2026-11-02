@@ -270,6 +270,7 @@ Live checks live in `scripts/spikes/`. Results of every verified run, including 
 ## Security and privacy
 
 - **No server-held spending key.** Your wallet signs; the server only checks, builds and broadcasts.
+- **More signals, no quizzes.** Tatum's address list (`GET /v3/security/address/{address}`, works with Sui addresses) holds a listed recipient. A burst of sends, or a new recipient with a large amount, gets a one-line reminder. After 3+ refusals the factor weights shift toward what you actually react to, and your habits are stated in plain words. An optional "what is it for?" note is matched by meaning against your past reasons using Walrus Memory's own similarity.
 - **Fails closed.** Missing chain facts or memory never produce a quiet `normal`.
 - **Send gate.** Sends are capped at 0.1 SUI, need an acknowledgement above `normal`, and need a passing dry run.
 - **Sign-in tokens** are HMAC-signed, expire, and are bound to one address.

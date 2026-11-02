@@ -15,6 +15,7 @@ const body = z.object({
   amount: z.number().positive().max(1e9),
   hour: z.number().int().min(0).max(23).optional(),
   network: z.enum(["testnet", "mainnet"]).optional(),
+  note: z.string().max(200).optional(),
 });
 
 export async function POST(req: Request) {
@@ -22,12 +23,12 @@ export async function POST(req: Request) {
   if (tooMany) return tooMany;
   const parsed = body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return Response.json({ error: "invalid input" }, { status: 400 });
-  const { sender, recipient, amount, hour, network } = parsed.data;
+  const { sender, recipient, amount, hour, network, note } = parsed.data;
   try {
     const owner = requestOwner(req);
     const rt = getRuntime(network);
     const result = await checkSend(
-      { sender, recipient, amount },
+      { sender, recipient, amount, note },
       { source: rt.source, mem: owner ? getMemory(owner) : emptyMemory(), hour: () => hour ?? new Date().getUTCHours(), publicView: false },
     );
     return Response.json({ network: rt.network, memory: rt.memory, sender, ...result });

@@ -76,10 +76,30 @@ export async function finishDecision(jobId: string, deps: { mem: MemLike }): Pro
   return { blobId: blob_id };
 }
 
+/**
+ * Memory ranks by meaning and reports a distance (0 = identical). On the real mainnet memories,
+ * related notes scored about 0.5-0.65, loosely related 0.7+, unrelated 0.85+.
+ * ponytail: cutoff from one small sample, re-check with more memories.
+ */
+export const SAME_MEANING = 0.6;
+
+/** Past refusals whose typed reason means roughly what the user just typed, closest first. */
+export async function similarRefusals(note: string, deps: { mem: MemLike }): Promise<Decision[]> {
+  const { results } = await deps.mem.recall({ query: note, limit: 20 });
+  const near = results.filter((r) => r.distance <= SAME_MEANING).sort((a, b) => a.distance - b.distance);
+  const { decisions } = parseResults(near);
+  const order = new Map(near.map((r, i) => [r.blob_id, i]));
+  return decisions.filter((d) => d.action === "deny").sort((a, b) => (order.get(a.blobId ?? "") ?? 0) - (order.get(b.blobId ?? "") ?? 0));
+}
+
 export async function loadDecisions(deps: {
   mem: MemLike;
 }): Promise<{ decisions: Decision[]; ignored: number }> {
   const { results } = await deps.mem.recall({ query: "said-no decision", limit: 100 });
+  return parseResults(results);
+}
+
+function parseResults(results: { blob_id: string; text: string }[]): { decisions: Decision[]; ignored: number } {
   const byId = new Map<string, Decision>();
   let ignored = 0;
   for (const r of results) {

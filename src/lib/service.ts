@@ -1,6 +1,6 @@
 import { evaluate, habits, learnWeights, type Weights } from "./engine";
 import { deriveFeatures } from "./features";
-import { loadDecisions, saveDecision, type MemLike } from "./memory";
+import { loadDecisions, saveDecision, similarRefusals, type MemLike } from "./memory";
 import { getChainFacts, type ChainFacts, type ChainSource, type RequestLogEntry, type Timing } from "./tatum";
 import type { Decision, Features, Level, Verdict } from "./types";
 
@@ -55,7 +55,7 @@ export function riskSignals(f: Features, facts: ChainFacts): { text: string; lev
  * Fails closed: any unavailable input raises the verdict to at least "reflection".
  */
 export async function checkSend(
-  input: { sender: string; recipient: string; amount: number },
+  input: { sender: string; recipient: string; amount: number; note?: string },
   deps: CheckDeps,
 ): Promise<CheckResult> {
   const facts = await getChainFacts(input.sender, input.recipient, input.amount, deps.source, deps.timing);
@@ -84,6 +84,8 @@ export async function checkSend(
   // amounts by putting the send and every past decision on one baseline.
   const baseline = available && facts.medianAmount > 0 ? facts.medianAmount : 1;
   const rebased = decisions.map((d) => ({ ...d, features: { ...d.features, amountRatio: d.amount / baseline } }));
+  // Forgotten refusals must not come back through the meaning search.
+  const deletedIds = new Set(decisions.filter((d) => d.action === "delete").map((d) => d.target));
   const weights = learnWeights(rebased);
   const verdict = evaluate({ ...features, amountRatio: input.amount / baseline }, input.recipient, rebased, weights);
   const extra: string[] = [];
@@ -94,6 +96,22 @@ export async function checkSend(
     for (const s of riskSignals(features, facts)) {
       verdict.level = atLeast(verdict.level, s.level);
       verdict.reasons.push(s.text);
+    }
+    if (facts.screen.status === "flagged") {
+      verdict.level = "hold";
+      verdict.reasons.push(`Tatum lists this address as malicious${facts.screen.why ? `: ${facts.screen.why}` : ""}.`);
+    }
+  }
+  // Optional note: if it means what an earlier refusal meant, quote that refusal. A nudge, never a block.
+  if (input.note?.trim() && memoryOk) {
+    try {
+      const [near] = (await similarRefusals(input.note.trim(), { mem: deps.mem })).filter((d) => !deletedIds.has(d.id));
+      if (near) {
+        verdict.level = atLeast(verdict.level, "reminder");
+        verdict.reasons.push(`This sounds like something you refused before: "${near.reason}"`);
+      }
+    } catch {
+      /* the note is a bonus; the check stands without it */
     }
   }
   if (extra.length > 0) {
