@@ -12,6 +12,8 @@ export type ChainFacts = {
   medianAmount: number;
   priorTxCount: number;
   priorToRecipient: number;
+  /** Sends in the last hour, for spotting a rapid burst. */
+  recentSends: number;
   dryRunOk: boolean;
   requestLog: RequestLogEntry[];
 };
@@ -88,6 +90,7 @@ export async function getChainFacts(
       medianAmount: median(history.map((h) => h.amount)),
       priorTxCount: history.length,
       priorToRecipient: history.filter((h) => h.recipient === recipient).length,
+      recentSends: history.filter((h) => h.ts <= now() / 1000 && h.ts >= now() / 1000 - 3600).length,
       dryRunOk,
       requestLog,
     };

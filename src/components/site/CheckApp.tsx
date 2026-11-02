@@ -48,6 +48,16 @@ function CheckInner() {
   const [why, setWhy] = useState(false);
   const [picked, setPicked] = useState<Status["network"] | null>(null);
   const net = picked ?? status?.network ?? "testnet";
+  // Reflection is a short pause, not a quiz: the button simply unlocks after a few seconds.
+  const [wait, setWait] = useState(0);
+  useEffect(() => {
+    setWait(res?.verdict.level === "reflection" ? 5 : 0);
+  }, [res]);
+  useEffect(() => {
+    if (wait <= 0) return;
+    const t = setTimeout(() => setWait((w) => w - 1), 1000);
+    return () => clearTimeout(t);
+  }, [wait]);
 
   useEffect(() => {
     getStatus().then(setStatus);
@@ -244,7 +254,7 @@ function CheckInner() {
                     <p className="v-meta">
                       {when(top.ts)}, {top.action === "deny" ? "you denied" : "you decided on"} {top.amount} SUI.{" "}
                       {top.blobId && (blobUrl(top.blobId)
-                        ? <>Memory <a href={blobUrl(top.blobId)} target="_blank" rel="noreferrer">{top.blobId}</a></>
+                        ? <>Memory <a href={blobUrl(top.blobId)} target="_blank" rel="noreferrer">{top.blobId}</a> (encrypted, so Walruscan shows no readable data)</>
                         : <>Memory {top.blobId} (local)</>)}
                     </p>
                     <p className="v-counter">Without this memory, the same send would be <b>{v.counterfactualLevel}</b>. With it: <b>{v.level}</b>.</p>
@@ -255,13 +265,14 @@ function CheckInner() {
                   <h2 className="v-head" style={{ fontWeight: 400 }}>No past refusal applies to this send.</h2>
                 )}
                 <ul className="v-reasons">{v.reasons.map((r) => <li key={r}>{r}</li>)}</ul>
+                {res.habits.length > 0 && <p className="v-meta" style={{ marginTop: "10rem" }}>{res.habits.join(" ")} <i>(learned from your refusals)</i></p>}
                 {res.ignoredMemories > 0 && <p className="v-meta" style={{ marginTop: "10rem" }}>{res.ignoredMemories} unreadable memories were ignored.</p>}
 
                 {!denying && (
                   <div className="acts">
                     <button className="cta" onClick={() => { setDenying(true); setSave({ state: "idle" }); }} disabled={!canSave}>Deny this send</button>
-                    <button className="btn" onClick={proceed} disabled={sending || !canSave}>
-                      {sending ? "Working…" : v.level === "normal" ? "Proceed" : "Yes, this is intentional"}
+                    <button className="btn" onClick={proceed} disabled={sending || !canSave || wait > 0}>
+                      {sending ? "Working…" : wait > 0 ? `Take a breath… ${wait}` : v.level === "normal" ? "Proceed" : v.level === "reminder" ? "Send anyway" : "Yes, this is intentional"}
                     </button>
                     {save.state === "saved" && <button className="btn" onClick={() => runCheck()}>Repeat this send</button>}
                   </div>
@@ -304,10 +315,20 @@ function CheckInner() {
               </button>
               {why && (
                 <div className="why-b">
-                  <pre>{`similarity = 0.35 × recipient + 0.30 × amount + 0.20 × hour + 0.15 × interaction
+                  <pre>{`similarity = ${res.weights.recipient.toFixed(2)} × recipient + ${res.weights.amount.toFixed(2)} × amount + ${res.weights.hour.toFixed(2)} × hour + ${res.weights.interaction.toFixed(2)} × interaction${res.weights.recipient === 0.35 ? "" : "  (weights learned from your refusals)"}
 this send:  recipient ${res.features.novelRecipient ? "new" : "known"} · amount ${res.features.amountRatio.toFixed(2)}× your usual · hour ${res.features.hour}:00 · ${res.features.interactions} past sends to them
 score ${v.score.toFixed(2)} · counted evidence with a stated prior, not machine learning`}</pre>
                   {v.matches.length === 0 && <p style={{ color: "var(--muted)" }}>No stored decision is similar enough (0.40 or above).</p>}
+                  {top && (() => {
+                    const best = v.matches.find((m) => m.decision.id === top.id);
+                    return best ? (
+                      <pre>{`closest refusal, by factor (max in brackets)
+recipient    ${best.parts.recipient.toFixed(2)}  [${res.weights.recipient.toFixed(2)}]
+amount       ${best.parts.amount.toFixed(2)}  [${res.weights.amount.toFixed(2)}]  you: ${res.features.amountRatio.toFixed(1)}× your usual
+hour         ${best.parts.hour.toFixed(2)}  [${res.weights.hour.toFixed(2)}]
+interaction  ${best.parts.interaction.toFixed(2)}  [${res.weights.interaction.toFixed(2)}]`}</pre>
+                    ) : null;
+                  })()}
                   {v.matches.map((m) => (
                     <div className="mrow" key={m.decision.id}>
                       <span className={`badge ${m.decision.action === "deny" ? "deny" : ""}`}>{m.decision.action}</span>

@@ -1,4 +1,4 @@
-import { evaluate } from "./engine";
+import { evaluate, habits, learnWeights, type Weights } from "./engine";
 import { deriveFeatures } from "./features";
 import { loadDecisions, saveDecision, type MemLike } from "./memory";
 import { getChainFacts, type ChainFacts, type ChainSource, type RequestLogEntry, type Timing } from "./tatum";
@@ -29,7 +29,26 @@ export type CheckResult = {
   facts?: ChainFacts;
   requestLog: RequestLogEntry[];
   ignoredMemories: number;
+  /** Plain-words patterns found in the user's own refusals. */
+  habits: string[];
+  /** The factor weights used for this check: personal once you have 3+ refusals. */
+  weights: Weights;
 };
+
+const BURST_MIN = 3;
+const SPIKE_RATIO = 5;
+
+/**
+ * Chain-only warnings that need no past refusal. They only ever raise a send to "reminder",
+ * so ordinary sends stay silent and a quiet nudge is the most this can cause.
+ */
+export function riskSignals(f: Features, facts: ChainFacts): { text: string; level: Level }[] {
+  const out: { text: string; level: Level }[] = [];
+  if (facts.recentSends >= BURST_MIN) out.push({ text: `${facts.recentSends} sends in the last hour. Slow down?`, level: "reminder" });
+  if (f.novelRecipient && f.amountRatio >= SPIKE_RATIO)
+    out.push({ text: `New recipient, and ${f.amountRatio.toFixed(1)}× your usual send.`, level: "reminder" });
+  return out;
+}
 
 /**
  * Combines live chain facts (Tatum) with the user's remembered decisions (Walrus Memory).
@@ -65,11 +84,18 @@ export async function checkSend(
   // amounts by putting the send and every past decision on one baseline.
   const baseline = available && facts.medianAmount > 0 ? facts.medianAmount : 1;
   const rebased = decisions.map((d) => ({ ...d, features: { ...d.features, amountRatio: d.amount / baseline } }));
-  const verdict = evaluate({ ...features, amountRatio: input.amount / baseline }, input.recipient, rebased);
+  const weights = learnWeights(rebased);
+  const verdict = evaluate({ ...features, amountRatio: input.amount / baseline }, input.recipient, rebased, weights);
   const extra: string[] = [];
   if (!available) extra.push(`Tatum check unavailable: ${facts.reason}`);
   if (!memoryOk) extra.push("memory unavailable: could not read your past decisions");
   if (available && !facts.dryRunOk) extra.push("simulation failed: the dry-run of this send did not succeed");
+  if (available) {
+    for (const s of riskSignals(features, facts)) {
+      verdict.level = atLeast(verdict.level, s.level);
+      verdict.reasons.push(s.text);
+    }
+  }
   if (extra.length > 0) {
     verdict.level = atLeast(verdict.level, "reflection");
     verdict.reasons.push(...extra);
@@ -81,6 +107,8 @@ export async function checkSend(
     facts: available ? facts : undefined,
     requestLog: facts.requestLog,
     ignoredMemories,
+    habits: habits(decisions),
+    weights,
   };
 }
 

@@ -22,7 +22,10 @@ export type Decision = {
   blobId?: string;
 };
 
-export type Match = { decision: Decision; similarity: number };
+/** What each factor contributed to a match's similarity. */
+export type Parts = { recipient: number; amount: number; hour: number; interaction: number };
+
+export type Match = { decision: Decision; similarity: number; parts: Parts };
 
 export type Verdict = {
   level: Level;

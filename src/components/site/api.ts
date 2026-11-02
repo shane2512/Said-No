@@ -1,4 +1,5 @@
 import type { Decision, Features, Level, Verdict } from "@/lib/types";
+import type { Weights } from "@/lib/engine";
 import type { ChainFacts, RequestLogEntry } from "@/lib/tatum";
 
 export type Status = {
@@ -19,6 +20,8 @@ export type CheckResponse = {
   facts?: ChainFacts;
   requestLog: RequestLogEntry[];
   ignoredMemories: number;
+  habits: string[];
+  weights: Weights;
 };
 
 export type { Decision, Features, Level };
