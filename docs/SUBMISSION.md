@@ -72,7 +72,7 @@ All 12 were confirmed to exist on the Walrus mainnet aggregator on 31 Oct 2026.
 ## 6. Honest notes for judges (include these)
 
 - The 12 mainnet memories were drafted with an AI assistant as example decisions. They prove the writes; they are not months of real use. The README says so.
-- Tatum reads work on testnet and mainnet. A send has been run on testnet only; a mainnet send is untested.
+- Tatum reads and sends work on testnet and mainnet. One small real mainnet send (0.0000001 SUI, digest `2xVuyxj3L4YGVxKVbaVrfkwGJNrDww61GFtd7ondLDGy`) was made from the live app and verified on-chain; testnet sends were run repeatedly. It is one transaction, not a load test.
 - The meaning-match cutoff came from a small sample, and the scam-list check has been confirmed live only for a clean address.
 - Memories live in the project's Walrus account, separated per wallet by namespace, so the operator can read them. A demo, not a vault.
 - Much of the code was written with an AI coding assistant (Claude Code), test-first. **Check the event rules on AI-assisted coding before submitting** (question 1 in section 8).

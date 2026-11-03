@@ -175,6 +175,7 @@ Full log with digests: `docs/spike-results.md`. Summary:
 - **Walrus Memory** write and recall verified on mainnet; writes take about 25 s; recall is semantic only, so each decision is stored as a sentence plus a `DECISION_JSON:` line and matched in code.
 - **Wallet flow** verified on testnet end to end with a local key standing in for the wallet: live `/api/build` → sign → `/api/broadcast` (digest above).
 - **Per-wallet isolation** verified live on real Walrus: two wallets, a forged sign-in refused, B cannot see A.
+- **First real mainnet send (3 Nov):** the owner sent 0.0000001 SUI (100 MIST) on mainnet from `said-no.live/app`, digest `2xVuyxj3L4YGVxKVbaVrfkwGJNrDww61GFtd7ondLDGy` (https://suiscan.xyz/mainnet/tx/2xVuyxj3L4YGVxKVbaVrfkwGJNrDww61GFtd7ondLDGy). Read on-chain through Tatum: status success; recipient +100 MIST; sender −1,088,199 MIST, of which the fee is computation 100,000 + storage 1,976,000 − rebate 987,901. Wallet activity shows the total debit (amount plus fee), which is why it displays about 0.0011 SUI. One small transaction, not a load test.
 - **Mainnet audit** (31 Oct): reads, unsigned build, send cap, garbage broadcast rejection, history parsing on a real mainnet sender, all 12 blobs exist.
 - **Wallet connects on `said-no.live`** (the "malicious site" warning on the `vercel.app` address went away on the custom domain; the owner confirmed).
 - 110 tests pass; typecheck clean; production build clean.
@@ -192,7 +193,7 @@ Full log with digests: `docs/spike-results.md`. Summary:
 ## 13. Honesty rules (the submission is judged, and the owner wants it truthful)
 
 - The **12 mainnet memories were drafted with an AI assistant** as example decisions. They are labelled `real` at the owner's explicit choice. They prove the writes; they are not months of real use. The README says so. Never describe them as organic user history.
-- **Mainnet sends are untested.** Reads and the unsigned build were verified on mainnet; a real mainnet send needs the owner's wallet with real SUI (blocked: funds frozen on the owner's exchange as of 3 Nov). Say "reads on testnet and mainnet, sends verified on testnet".
+- **Mainnet send: one tiny real send is verified** (digest in section 11). Say "reads and sends work on testnet and mainnet; one small mainnet send was verified on-chain". Do not claim more than that. A tiny send costs about 0.001 SUI in network fee regardless of amount.
 - A real **wallet popup** approve flow has been verified only with a local key standing in for the wallet, plus the owner confirming that connecting works. Do not claim more.
 - Memories sit in the project's Walrus account, so the operator can read them. This is a demo, not a vault.
 - Much of the code was written with an AI coding assistant (Claude Code). Check the event's AI-assisted-coding rule before submitting.
@@ -220,6 +221,7 @@ Full log with digests: `docs/spike-results.md`. Summary:
 ## 15. PENDING WORK (priority order)
 
 ### P0: required to submit (owner-only items marked **[OWNER]**)
+0. **Security: remove `DEMO_WALLET_KEY` from Vercel and stop uploading it [OWNER decides].** The mainnet test showed the owner's funded wallet address `0xef8d4d…8f17` is the address of the old server demo key. The app no longer reads that key (wallets sign in the browser), but it still sits in the Vercel production environment and in the local `.env`. Remove it from Vercel (`vercel env rm DEMO_WALLET_KEY production`), keep it out of `.env`, and consider moving funds to a fresh wallet. `scripts/vercel-env.mjs` no longer uploads it.
 1. **Finish verifying the newest features live.** Done: the response shape and a `clear` screening result. Still to do: (a) find or construct a Tatum-flagged address to see `hold`; (b) with a test wallet, save 3 refusals and confirm personal weights and `habits` appear; (c) type a note similar to a saved reason and confirm the quote appears. Steps (b) and (c) write to Walrus, so ask the owner first.
 2. **Run the full UI flow once for real [OWNER, with an agent watching]:** connect Slush on `said-no.live/app` (testnet), sign in, check, deny with a reason, re-check and see the quote, then Proceed and approve a small testnet send. Capture the digest and record it in `docs/spike-results.md`.
 3. **Record the 90-second demo video [OWNER]** using section 17. Upload it (YouTube unlisted or similar) and keep the URL.
@@ -228,7 +230,7 @@ Full log with digests: `docs/spike-results.md`. Summary:
 6. **Discord questions [OWNER]:** ask whether AI-assisted coding is allowed and what disclosure is required; whether the licence (MIT) is acceptable; whether one person may submit one project; find the Event Rules page.
 
 ### P1: strongly recommended
-7. **Mainnet send test [OWNER, blocked by funds]:** when funds are available, send about 0.001 SUI from the owner's wallet to their own second address on mainnet via `said-no.live/app`; verify the digest on-chain. Then update the README "Honest limits" line.
+7. ~~Mainnet send test~~ **Done 3 Nov** (digest in section 11, README updated). Optional: one more mainnet send at a different amount.
 8. **Mainnet UI click-through:** toggle MAINNET on the live page, run a check, confirm facts load (verified by API only so far).
 9. **Landing "Real memories, 10 needed" tile and any copy that still implies a shared pool.** Re-read the landing, `/lab` and `/docs` for statements that are stale after per-wallet memory.
 10. **Clean the project namespace (optional):** a test memory ("wallet A private reason") sits in the shared `decisions` namespace from the isolation incident. Removing it needs a delete write; only do this with the owner's approval.
@@ -277,7 +279,7 @@ Full log with digests: `docs/spike-results.md`. Summary:
 | 1:18 | Press Proceed after the 5-second pause, approve in Slush, show the digest. | "If I still want to send, my wallet signs it and Tatum broadcasts it. The server never holds a key." |
 | 1:26 | Cut to README blob table (or `/lab`). | "Twelve mainnet Walrus writes, every blob linked. If Tatum or Memory fails, it fails closed. Said-No." |
 
-**Do not say:** that the 12 memories are organic history; that a mainnet send was run; that Walruscan shows the memory text; "AI-powered".
+**Do not say:** that the 12 memories are organic history; that mainnet sends are battle-tested (one tiny send was verified); that Walruscan shows the memory text; "AI-powered".
 **Fallback if saving is slow:** open `/app#recorded` (the recorded run) and narrate that, then cut back.
 **After recording:** trim to about 90 s, add captions, upload, set unlisted, test the link in a private window.
 
@@ -302,7 +304,7 @@ Full log with digests: `docs/spike-results.md`. Summary:
 
 **How it uses each sponsor.** *Tatum:* gRPC balance, outgoing history (to derive your usual amount), dry run, broadcast of the wallet-signed transaction, plus the malicious-address list; native gRPC on testnet and mainnet, paced for the 3 rps free plan. *Walrus Memory:* every decision (deny, approve, override, delete) is stored with the user's typed reason and recalled to drive the verdict, including a semantic match on an optional note; 12 mainnet writes with blob IDs in the README.
 
-**Honest notes for judges.** The 12 mainnet memories were drafted with an AI assistant as example decisions; they prove the writes, not months of use. Reads work on testnet and mainnet; a send has been run on testnet only. Memories live in the project's Walrus account, separated per wallet by namespace, so the operator can read them. Much of the code was written with an AI coding assistant (Claude Code).
+**Honest notes for judges.** The 12 mainnet memories were drafted with an AI assistant as example decisions; they prove the writes, not months of use. Reads work on testnet and mainnet; sends work on testnet and mainnet (one small mainnet send verified on-chain, digest in the README). Memories live in the project's Walrus account, separated per wallet by namespace, so the operator can read them. Much of the code was written with an AI coding assistant (Claude Code).
 
 ## 19. Blog post checklist
 

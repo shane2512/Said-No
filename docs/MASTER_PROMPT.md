@@ -43,7 +43,7 @@ HARD RULES (these protect the owner; do not break them)
   force-pushing, or deleting data. Approval for one action is not approval for the next.
 - Be honest. Never claim something is verified unless you ran it and saw the result.
   Keep these truths in every public text: the 12 mainnet memories are AI-drafted example
-  decisions; mainnet SENDS are untested (reads and the unsigned build are verified);
+  decisions; only ONE tiny mainnet send has been verified (digest in README; reads and the unsigned build also verified);
   the wallet popup flow was verified with a stand-in key, not end to end in a browser by
   the agent; memories sit in the project's Walrus account so the operator can read them;
   much of the code was written with an AI assistant. Do not describe the 12 memories as
@@ -89,8 +89,8 @@ P0
 P1
  6. Re-read the landing page, /lab and /docs for stale or untrue statements (for example
     anything implying a shared memory pool, "real memories" counters, testnet-only claims).
- 7. When the owner reports a mainnet send digest, verify it on-chain and update the
-    README "Honest limits".
+ 7. Done: the first mainnet send was verified (see HANDOFF section 11). If the owner reports
+    another digest, verify it on-chain and update the README "Honest limits" only if it adds something.
  8. Mobile pass and accessibility pass on /app and /lab.
 P2
  9. Anything in HANDOFF section 15, P2.

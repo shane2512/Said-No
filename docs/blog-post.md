@@ -61,7 +61,7 @@ Memory is only useful if it is correct. Three bugs taught us that:
 ## Honest limits
 
 - The 12 memories we wrote to Walrus mainnet for the hackathon were drafted with an AI assistant as example decisions. They prove the writes, not months of real use. The README lists every blob ID.
-- Tatum reads work on testnet and mainnet. **A send has been run on testnet only.** A mainnet send is untested.
+- Tatum reads and sends work on testnet and mainnet. Testnet sends were run repeatedly, and **one real mainnet send** (0.0000001 SUI, [digest](https://suiscan.xyz/mainnet/tx/2xVuyxj3L4YGVxKVbaVrfkwGJNrDww61GFtd7ondLDGy)) was made from the live app and checked on-chain. The recipient got exactly that amount; the sender also paid the roughly 0.001 SUI network fee. One small transaction, not a load test.
 - The meaning-match cutoff came from a small sample of memories and will need re-tuning with more. The scam-list check has been confirmed live only for a clean address.
 - Memories sit in the project's Walrus account, so the operator can read them. This is a demo, not a vault.
 - Said-No adds friction. It cannot stop a determined user, and it is not financial advice.

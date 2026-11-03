@@ -280,7 +280,7 @@ Live checks live in `scripts/spikes/`. Results of every verified run, including 
 
 ## Honest limits
 
-- Tatum reads work on testnet and mainnet. **Sends have been run on testnet only.** Mainnet sends are untested.
+- Tatum reads and sends work on testnet and mainnet. Testnet sends were run repeatedly. **One real mainnet send** (0.0000001 SUI, [digest](https://suiscan.xyz/mainnet/tx/2xVuyxj3L4YGVxKVbaVrfkwGJNrDww61GFtd7ondLDGy)) was made from the live app and checked on-chain: the recipient received exactly that amount, and the sender also paid the network fee of about 0.0011 SUI. That is one small transaction, not a load test.
 - The 12 mainnet memories are drafted examples, as noted above.
 - Walrus Memory recall is semantic only, so each decision is stored as a sentence plus a JSON line and matched in code. Writes take about 25 seconds.
 - Memory always uses the mainnet relayer; the staging relayer is down. So the same memories apply on testnet and mainnet.
@@ -291,7 +291,7 @@ Live checks live in `scripts/spikes/`. Results of every verified run, including 
 
 Ideas, not promises:
 
-- Verify a real mainnet send end to end.
+- Exercise mainnet sends more widely (only one small send so far).
 - Encrypt memories to the wallet so the operator cannot read them.
 - Import and export of a wallet's memories.
 - Reason-aware matching, so a refusal can generalise beyond the exact recipient.

@@ -82,3 +82,9 @@ Label `real` was chosen by the account owner. The reasons were drafted by the as
 - History on mainnet: `listOutgoing` parsed 20 plain transfers for a real sender. An address that only makes contract calls correctly shows none.
 - Walrus: all 12 mainnet-01..12 blobs, plus the demo blob, answer 200 on the mainnet aggregator.
 - NOT done: a mainnet send (needs the user's own wallet with real SUI).
+
+## 2026-11-03 First real mainnet send
+- Sent by the owner from `said-no.live/app` (toggle MAINNET): 0.0000001 SUI. Digest `2xVuyxj3L4YGVxKVbaVrfkwGJNrDww61GFtd7ondLDGy`.
+- Read through Tatum mainnet gRPC: status success. Recipient `0xef4918…24e7` +100 MIST (exactly the amount). Sender `0xef8d4d…8f17` −1,088,199 MIST.
+- Fee breakdown: computation 100,000 + storage 1,976,000 − storage rebate 987,901 ≈ 1,088,099 MIST (about 0.0011 SUI) plus the 100 MIST sent. The wallet's Activity screen shows the total debit, hence 0.0011.
+- Finding: the sender address equals the address of the old server `DEMO_WALLET_KEY`, which is no longer used by the app but is still in the Vercel env. See HANDOFF P0 item 0.
