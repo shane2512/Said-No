@@ -214,13 +214,13 @@ Full log with digests: `docs/spike-results.md`. Summary:
 ## 14. Current status snapshot (3 Nov 2026)
 
 - Git: branch `feat/said-no-v2` tracks `origin/main`; push with `git push origin HEAD:main`.
-- Latest feature commits: `0ea3aa8` (burst/new-address signals, per-factor why, learned habits, personal weights, softer friction) and `25e5f64` (Tatum scam-list screening, meaning match on an optional note). These were **unpushed and not deployed** when this file was written; the handoff commit pushes them. **After deploy, verify on the live site** that `/api/check` returns `facts.screen`, `weights` and `habits`, and run the two-wallet isolation script against it.
+- Latest feature commits: `0ea3aa8` (burst/new-address signals, per-factor why, learned habits, personal weights, softer friction) and `25e5f64` (Tatum scam-list screening, meaning match on an optional note). These were pushed with the handoff commit `a480d04` and are **deployed**. Verified live on 3 Nov: `/api/check` (mainnet) returned `facts.screen = {status:"clear"}` (the Tatum scam-list call succeeded with a Sui address), `weights` (default 0.35/0.30/0.20/0.15 for a fresh wallet) and `habits` (empty). **Not yet verified:** a *flagged* address (no known flagged Sui address was available), the personal-weights path with 3+ real refusals on the live site, and the note meaning-match against real memories in a wallet namespace.
 - Brand kit exists in `brand/`. README is professional and embeds the posters.
 
 ## 15. PENDING WORK (priority order)
 
 ### P0: required to submit (owner-only items marked **[OWNER]**)
-1. **Verify the live deploy of the newest features.** After the push, confirm `/api/check` shows `facts.screen` (`clear`/`unscreened`/`flagged`), `weights`, `habits`. Test the scam-screening call against Tatum's real endpoint with a Sui address (it was built from docs; live behaviour is unverified). If `screen` is always `unscreened`, check the `x-api-key`/endpoint and fix.
+1. **Finish verifying the newest features live.** Done: the response shape and a `clear` screening result. Still to do: (a) find or construct a Tatum-flagged address to see `hold`; (b) with a test wallet, save 3 refusals and confirm personal weights and `habits` appear; (c) type a note similar to a saved reason and confirm the quote appears. Steps (b) and (c) write to Walrus, so ask the owner first.
 2. **Run the full UI flow once for real [OWNER, with an agent watching]:** connect Slush on `said-no.live/app` (testnet), sign in, check, deny with a reason, re-check and see the quote, then Proceed and approve a small testnet send. Capture the digest and record it in `docs/spike-results.md`.
 3. **Record the 90-second demo video [OWNER]** using section 17. Upload it (YouTube unlisted or similar) and keep the URL.
 4. **Publish the blog post [OWNER]:** `docs/blog-post.md` is a draft. Update it for the new features (screening, personal weights, note matching, said-no.live), then publish on dev.to, Medium or Mirror and keep the URL.
