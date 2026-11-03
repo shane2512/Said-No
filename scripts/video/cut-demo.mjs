@@ -11,28 +11,28 @@ if (!raw || !out) throw new Error("usage: node scripts/video/cut-demo.mjs <raw.m
 
 // [start, end, speed, caption]
 const SEGMENTS = [
-  [6, 12, 1, "Said-No remembers the sends you refused"],
-  [12.5, 50, 7, "A consent firewall for Sui: Tatum for chain facts, Walrus for memory"],
-  [60, 80, 4, "Connect your own Sui wallet. The server holds no key."],
-  [84, 110, 4, "Enter a send, and what it is for"],
-  [111, 119, 2, "Sign in once. It moves no funds."],
-  [124, 140, 4, "Tatum reads the chain. No past refusal yet, so Said-No stays quiet."],
-  [142, 170, 4, "Deny it, and say why"],
-  [170, 198, 8, "Saved to Walrus Memory. About 25 s, sped up."],
-  [198, 210, 4, "Refusal remembered. The blob ID is the receipt."],
-  [210, 226, 3, "Same send again: it quotes your own words"],
-  [227, 230, 1, "The blob on Walruscan (encrypted)"],
-  [235.5, 239.5, 1.5, ""],
-  [240, 260, 3, "No black box: every factor and weight is visible"],
+  [6, 14, 1, "Said-No remembers the sends you refused"],
+  [14, 50, 5, "A consent firewall for Sui: Tatum for chain facts, Walrus for memory"],
+  [60, 80, 3, "Connect your own Sui wallet. The server holds no key."],
+  [84, 110, 3, "Enter a send, and what it is for"],
+  [111, 119, 1.5, "Sign in once. It moves no funds."],
+  [124, 142, 2.5, "Tatum reads the chain. No past refusal yet, so Said-No stays quiet."],
+  [142, 170, 3, "Deny it, and say why"],
+  [170, 198, 6, "Saved to Walrus Memory. About 25 s, sped up."],
+  [198, 210, 2, "Refusal remembered. The blob ID is the receipt."],
+  [210, 228, 2, "Same send again: it quotes your own words"],
+  [228, 230.5, 1, ""],
+  [235.5, 239.5, 1, "The blob on Walruscan (encrypted)"],
+  [240, 256, 2, "No black box: every factor and weight is visible"],
   [260, 286, 2.5, "Proceed: your wallet signs, Tatum broadcasts"],
-  [288, 298, 3, "Confirmed on Sui testnet"],
-  [304, 322, 4, "Memory Lab: inspect and forget"],
-  [327.5, 329.2, 1, "12 mainnet Walrus writes, every blob linked"],
-  [333, 335.7, 1.5, ""],
-  [338, 341, 1.5, ""],
+  [288, 298, 2, "Confirmed on Sui testnet"],
+  [304, 322, 3, "Memory Lab: inspect and forget"],
+  [327.5, 329.7, 1, "12 mainnet Walrus writes, every blob linked"],
+  [333, 336, 1, ""],
+  [338, 341, 1, ""],
 ];
 const END_CARD = resolve(import.meta.dirname, "../../brand/png/poster-16x9.png");
-const END_SECONDS = 3;
+const END_SECONDS = 4;
 const FADE = 0.15;
 
 const work = join(tmpdir(), "said-no-cut");
