@@ -95,7 +95,7 @@ function LabInner() {
         <div className="col" style={{ zIndex: 30 }}>
           <div className="col-h">Your wallet</div>
           <p style={{ fontSize: "15.5rem", lineHeight: "24rem", color: "var(--muted)", marginBottom: "14rem" }}>
-            Your memories are kept per wallet. Connect, then sign a message to unlock them. Signing moves no funds.
+            Kept per wallet. Sign in to unlock; no funds move.
           </p>
           <div style={{ display: "flex", gap: "10rem", alignItems: "center", flexWrap: "wrap" }}>
             <ConnectButton />
@@ -106,8 +106,8 @@ function LabInner() {
           <div className="col-h" style={{ marginTop: "30rem" }}>Add a demo refusal</div>
           <p style={{ fontSize: "15.5rem", lineHeight: "24rem", color: "var(--muted)", marginBottom: "20rem" }}>
             {isLocal
-              ? "This server keeps memories locally. They are not on Walrus and disappear on restart."
-              : "These write to the real Walrus Memory account, labelled as demo data. Each takes about 25 seconds."}
+              ? "Kept locally, not on Walrus."
+              : "Saved to Walrus as demo data, about 25 s each."}
           </p>
           <div>
             {PRESETS.map((p) => (
@@ -133,9 +133,9 @@ function LabInner() {
           {!loadErr && items === null && session.signedIn && <p className="empty"><i className="pending" />Recalling your memory…</p>}
           {!session.signedIn && (
             <>
-              <p className="empty">Your own memories are private to your wallet. Connect and sign in to see them. Below is the public proof of the project's mainnet Walrus Memory writes.</p>
+              <p className="empty">Connect a wallet to see your own memories.</p>
               <div className="col-h" style={{ margin: "10rem 0" }}>Public proof: {PROOF_ROWS.length} mainnet writes</div>
-              <p className="note" style={{ marginBottom: "14rem" }}>Example decisions drafted with an AI assistant, saved through the mainnet relayer. Blobs are encrypted, so only the blob id, action and amount are public; the reasons are not shown.</p>
+              <p className="note" style={{ marginBottom: "14rem" }}>Example memories. Encrypted, so only the blob id, action and amount show.</p>
               {PROOF_ROWS.map((d) => (
                 <div className="mem" key={d.id}>
                   <div><span className={`badge ${d.action === "deny" ? "deny" : ""}`}>{d.action}</span><small style={{ marginTop: "8rem" }}>{d.kind}</small></div>
