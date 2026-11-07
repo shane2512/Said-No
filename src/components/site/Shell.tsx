@@ -63,7 +63,7 @@ export default function Shell({ children }: { children: ReactNode }) {
       </header>
       <main>{children}</main>
       <footer className="site-foot">
-        <div className="copy"><span>© 2026</span><span>SAID-NO. AN ENTRY IN THE TATUM x WALRUS MEMORY HACKATHON.</span></div>
+        <div className="copy"><span>© 2026</span><span>SAID-NO. AN ENTRY IN THE TATUM x WALRUS MEMORY HACKATHON. TRACKS: CONSUMER FINANCE AND BEST WALRUS MEMORY.</span></div>
       </footer>
     </div>
   );

@@ -48,7 +48,7 @@ Two chain-only nudges need no past refusal: three or more sends in an hour, and 
 
 ## Your wallet, your memory
 
-Visitors connect their own Sui wallet. The server holds **no spending key**: it checks the send, builds an unsigned transfer, your wallet signs it, and Tatum broadcasts it. You sign one message to unlock your memories, which live in a separate namespace per wallet. If Tatum or Memory is unreachable, Said-No does not quietly say "normal". It treats the send as at least a reflection. A safety tool that goes silent when it breaks is worse than none.
+You can run a check with no wallet at all and see Tatum's facts straight away. A wallet is needed only when you save a refusal or send. Then you connect your own Sui wallet and the server holds **no spending key**: it checks the send, builds an unsigned transfer, your wallet signs it, and Tatum broadcasts it. You sign one message to unlock your memories, which live in a separate namespace per wallet. If Tatum or Memory is unreachable, Said-No does not quietly say "normal". It treats the send as at least a reflection. A safety tool that goes silent when it breaks is worse than none.
 
 ## What it learned from being built
 
@@ -69,4 +69,4 @@ Memory is only useful if it is correct. Three bugs taught us that:
 
 ## Try it
 
-Open https://said-no.live/app, connect a Sui wallet (testnet is free from the faucet), deny a send with a reason, then check the same send again and watch it quote you back.
+Open https://said-no.live/app and run a check, no wallet needed. To see it remember you, connect a Sui wallet (testnet is free from the faucet), deny a send with a reason, then check the same send again and watch it quote you back.

@@ -14,7 +14,9 @@
 
 <p align="center"><img src="brand/png/poster-16x9.png" alt="Said-No: remember what you refused" width="900"></p>
 
-Built for the **Tatum x Walrus Memory "Total Recall" hackathon**. Tracks: **Consumer Finance** and **Best Walrus Memory**.
+Built for the **Tatum x Walrus Memory "Total Recall" hackathon**.
+
+> **Submitted tracks:** **Track 3: Consumer Finance** and **Best Walrus Memory**.
 
 ---
 

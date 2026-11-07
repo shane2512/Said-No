@@ -73,8 +73,8 @@ export const PROOF = [
     stats: [
       ["10+", "Mainnet memories due"],
       ["10 Nov", "Submission"],
-      ["Live", "Check page"],
-      ["Track 3", "Consumer finance"],
+      ["Track 3", "Consumer Finance"],
+      ["Track", "Best Walrus Memory"],
     ],
   },
 ];

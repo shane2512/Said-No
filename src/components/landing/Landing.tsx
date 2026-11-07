@@ -468,9 +468,9 @@ export default function Landing() {
           <div><h4>Built on</h4><a href="https://docs.wal.app/walrus-memory" target="_blank" rel="noreferrer"><Logo name="Walrus Memory" /> Memory</a><a href="https://docs.tatum.io/reference/rpc-sui" target="_blank" rel="noreferrer"><Logo name="Tatum" /></a><a href="https://docs.sui.io" target="_blank" rel="noreferrer"><Logo name="Sui" /> Sui</a></div>
           <div><h4>Quick links</h4><a href="/app">Check a send</a><a href="/lab">Memory Lab</a><a href="/docs">Docs</a><a href="#faq">FAQ</a></div>
           <div><h4>Honesty</h4><span>Counted statistics, not ML</span><span>Demo data is labelled</span><span>Delegates are read/write</span></div>
-          <div className="r"><h4>Hackathon</h4><a href="https://tatum.io/hackathon/total-recall" target="_blank" rel="noreferrer">Total Recall</a><span>Consumer Finance</span><span>Best Walrus Memory</span></div>
+          <div className="r"><h4>Hackathon</h4><a href="https://tatum.io/hackathon/total-recall" target="_blank" rel="noreferrer">Total Recall</a><span>Track 3: Consumer Finance</span><span>Best Walrus Memory</span></div>
         </div>
-        <div className="copy"><span>© 2026</span><span>SAID-NO. AN ENTRY IN THE TATUM x WALRUS MEMORY HACKATHON.</span></div>
+        <div className="copy"><span>© 2026</span><span>SAID-NO. AN ENTRY IN THE TATUM x WALRUS MEMORY HACKATHON. TRACKS: CONSUMER FINANCE AND BEST WALRUS MEMORY.</span></div>
         <div className="giant">
           <i className="sq" style={{ left: "20rem", top: "20rem" }} /><i className="sq" style={{ right: "20rem", top: "20rem" }} />
           <i className="sq" style={{ left: "20rem", bottom: "20rem" }} /><i className="sq" style={{ right: "20rem", bottom: "20rem" }} />

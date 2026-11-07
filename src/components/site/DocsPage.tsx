@@ -30,6 +30,7 @@ export default function DocsPage() {
           <section id="what">
             <h2>What it is</h2>
             <p>Said-No is a personal consent firewall for Sui. Most wallets remember approvals; Said-No remembers the sends you rejected, with your own reason, and raises the friction on similar sends later.</p>
+            <p>Said-No is our entry in the Tatum x Walrus Memory &quot;Total Recall&quot; hackathon, submitted to <b>Track 3: Consumer Finance</b> and <b>Best Walrus Memory</b>.</p>
             <p>It does not decide what is dangerous. It asks whether you still agree with a decision you already made, and you stay in control.</p>
           </section>
 
