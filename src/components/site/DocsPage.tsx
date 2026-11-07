@@ -84,7 +84,7 @@ export default function DocsPage() {
                 <tr><td><code>POST /api/decide</code></td><td>Saves a decision to the signed-in wallet's own memory. Returns a job, about 25 s on Walrus.</td><td><code>Bearer token; action, recipient, amount, reason, kind, features, source?, target?</code></td></tr>
                 <tr><td><code>GET /api/jobs/:id</code></td><td>Blob id once saved; 202 until then</td><td>Bearer token</td></tr>
                 <tr><td><code>GET /api/memories</code></td><td>The signed-in wallet's own decisions and the count of unreadable ones. Empty without a token.</td><td>Bearer token</td></tr>
-                <tr><td><code>POST /api/send</code></td><td>Re-checks on the server, then executes. Needs <code>ALLOW_EXECUTE=true</code>, 0.1 SUI maximum.</td><td><code>recipient, amount, acknowledged, hour?</code></td></tr>
+                <tr><td><code>POST /api/send</code></td><td>Re-checks on the server, then executes. Needs <code>ALLOW_EXECUTE=true</code>.</td><td><code>recipient, amount, acknowledged, hour?</code></td></tr>
               </tbody>
             </table>
             <pre>{`curl -X POST http://localhost:3200/api/check \\

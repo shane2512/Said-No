@@ -57,7 +57,7 @@ No ML model is in the loop. It is deterministic and unit-tested.
 - **Optional note (meaning match):** the user can type what the send is for. Walrus Memory's own semantic distance (`SAME_MEANING = 0.6`, from a small sample; re-check with more memories) finds an earlier refusal that means the same thing and quotes it. It only nudges to `reminder`, never blocks. Deleted refusals never come back through this path.
 - **Reflection is a pause, not a quiz:** the Proceed button unlocks after 5 seconds on a `reflection` verdict.
 - **Fails closed:** if Tatum or Memory is unreachable, the verdict is at least `reflection`, never a quiet `normal`.
-- **Send gate (`sendGate`):** sends capped at **0.1 SUI**, need an acknowledgement above `normal`, and a passing dry run.
+- **Send gate (`sendGate`):** sends need an acknowledgement above `normal`, and a passing dry run.
 
 ## 5. Architecture
 

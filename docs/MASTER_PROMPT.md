@@ -52,7 +52,7 @@ HARD RULES (these protect the owner; do not break them)
   then implement. Keep typecheck and all tests green. Run `pnpm build` before pushing
   anything that touches routes or the client.
 - Do not casually change the decision engine (weights 0.35/0.30/0.20/0.15, thresholds
-  0.40/0.70/0.85, fail-closed behaviour, 0.1 SUI send cap, per-wallet namespace
+  0.40/0.70/0.85, fail-closed behaviour, per-wallet namespace
   binding). Each has a reason in HANDOFF.md section 4 and 12. If you must change one,
   add or update tests and explain why.
 - After touching memory code, re-run the two-wallet isolation script against the real

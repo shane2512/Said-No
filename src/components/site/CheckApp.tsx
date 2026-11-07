@@ -221,7 +221,7 @@ function CheckInner() {
             </span>
           </div>
           <div className="stat-r"><span>Memory</span><span className={status?.memory === "local" ? "warn" : undefined}>{status ? (status.memory === "local" ? "Local, not Walrus" : "Walrus mainnet") : "…"}</span></div>
-          <div className="stat-r"><span>Execution</span><span>{status ? (status.executeOn ? `On, max ${status.maxSend} SUI` : "Off") : "…"}</span></div>
+          <div className="stat-r"><span>Execution</span><span>{status ? (status.executeOn ? "On" : "Off") : "…"}</span></div>
           <div className="stat-r"><span>Wallet</span><span>{sender ? short(sender) : "Not connected"}</span></div>
           <div className="stat-r"><span>Your memory</span><span>{session.signedIn ? "Unlocked" : "Locked"}</span></div>
           <div style={{ marginTop: "12rem", display: "flex", gap: "10rem", alignItems: "center", flexWrap: "wrap" }}>

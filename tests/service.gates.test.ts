@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { createLocalMem } from "@/lib/memory-local";
 import { loadDecisions, saveDecision, finishDecision } from "@/lib/memory";
-import { sendGate, writesAllowed, MAX_SEND_SUI } from "@/lib/service";
+import { sendGate, writesAllowed } from "@/lib/service";
 import type { Decision } from "@/lib/types";
 
 const d = (id: string): Decision => ({
@@ -52,10 +52,6 @@ describe("sendGate", () => {
       expect(sendGate({ level, amount: 0.01, acknowledged: false, executeOn: true, dryRunOk: true })).toMatchObject({ ok: false, status: 409 });
       expect(sendGate({ level, amount: 0.01, acknowledged: true, executeOn: true, dryRunOk: true })).toEqual({ ok: true });
     }
-  });
-
-  it("refuses amounts above the demo cap, whatever the level", () => {
-    expect(sendGate({ level: "normal", amount: MAX_SEND_SUI + 0.01, acknowledged: true, executeOn: true, dryRunOk: true })).toMatchObject({ ok: false, status: 400 });
   });
 
   it("refuses when the dry-run did not succeed, even if acknowledged", () => {

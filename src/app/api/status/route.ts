@@ -1,5 +1,5 @@
 import { getRuntime } from "@/lib/runtime";
-import { executeAllowed, MAX_SEND_SUI, publicView, writesAllowed } from "@/lib/service";
+import { executeAllowed, publicView, writesAllowed } from "@/lib/service";
 
 export const runtime = "nodejs";
 
@@ -13,7 +13,6 @@ export async function GET(req: Request) {
       executeOn: executeAllowed(process.env),
       writesOn: writesAllowed(process.env),
       publicView: publicView(process.env),
-      maxSend: MAX_SEND_SUI,
     });
   } catch {
     return Response.json({ error: "not configured" }, { status: 503 });

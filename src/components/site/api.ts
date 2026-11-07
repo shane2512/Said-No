@@ -8,7 +8,6 @@ export type Status = {
   executeOn: boolean;
   writesOn: boolean;
   publicView: boolean;
-  maxSend: number;
 };
 
 export type CheckResponse = {
