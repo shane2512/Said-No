@@ -1,6 +1,6 @@
 {
   "recordedOn": "2026-10-30",
-  "note": "Recorded from the real run in docs/spike-results.md: Tatum Sui testnet, Walrus Memory via the mainnet relayer. The saved memory is labelled demo.",
+  "note": "Recorded from the real run in docs/spike-results.md: Tatum Sui testnet, Walrus Memory via the mainnet relayer. The saved memory is labelled demo. The reason text is tidied for display; the original test run saved it with different wording.",
   "recipient": "0xabababababababababababababababababababababababababababababababab",
   "blobId": "eutRS0w3RLXgPFFuGHPK5BcsCzr_Vs7PDP7PUaLQV0k",
   "digest": "BB3vxaoX2AsfnoeDoHkddFZ6emrmTXi1XHDDubxXq1Po",
@@ -8,7 +8,7 @@
     "id": "recorded-1",
     "recipient": "0xabababababababababababababababababababababababababababababababab",
     "amount": 0.5,
-    "reason": "Integration test: too large for someone I have never paid.",
+    "reason": "Too large for someone I have never paid.",
     "ts": 1793380697,
     "action": "deny",
     "source": "demo",

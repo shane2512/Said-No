@@ -10,7 +10,7 @@ const STEPS = runReplay(FILE);
 
 /** A recorded walk-through of the real run, so the flow can be seen even where saving is off. */
 export default function RecordedRun() {
-  const [i, setI] = useState(2);
+  const [i, setI] = useState(0);
   const s = STEPS[i];
   const changed = s.level !== s.counterfactual;
 
@@ -21,7 +21,7 @@ export default function RecordedRun() {
         <p style={{ fontSize: "15.5rem", lineHeight: "24rem", color: "var(--muted)", marginBottom: "20rem" }}>
           <span className="badge">Recorded, not live</span>
           <br />
-          Captured {FILE.recordedOn} from the real app: live Tatum on Sui testnet, and a memory saved to Walrus. The memory is labelled demo.
+          Captured {FILE.recordedOn} from the real app: live Tatum on Sui testnet, and a memory saved to Walrus. The memory is labelled demo, and its reason is tidied here (the original test run used different wording).
         </p>
         <div>
           {STEPS.map((t, n) => (

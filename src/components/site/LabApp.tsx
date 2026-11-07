@@ -8,6 +8,7 @@ import { authHeaders, blobUrl, getStatus, postJson, short, waitForBlob, when, ty
 import { dAppKit } from "./wallet";
 import { useSession } from "./useSession";
 import Shell from "./Shell";
+import { PROOF_ROWS } from "@/lib/proof";
 
 const PRESETS: { label: string; reason: string; recipient: string; amount: number; kind: Decision["kind"]; features: Decision["features"] }[] = [
   { label: "Too large for a stranger", reason: "Too large for someone I have never paid.", recipient: `0x${"ab".repeat(32)}`, amount: 0.5, kind: "soft", features: { novelRecipient: true, amountRatio: 1, hour: 14, interactions: 0 } },
@@ -124,12 +125,28 @@ function LabInner() {
         <div style={{ gridColumn: "span 3", position: "relative", zIndex: 3 }}>
           <div className="tiles">
             <div className="ntile">Active refusals<Display text={String(nDeny)} reveal={false} /></div>
-            <div className="ntile">{status?.publicView ? "Real memories, kept private" : "Real memories, 10 needed"}<Display text={String(realCount)} reveal={false} /></div>
+            <div className="ntile">Your real memories<Display text={String(realCount)} reveal={false} /></div>
             <div className="ntile">Unreadable, ignored<Display text={String(ignored)} reveal={false} /></div>
           </div>
 
           {loadErr && <p className="empty warn" role="alert">Memory could not be read right now. Nothing here means nothing is stored.</p>}
-          {!loadErr && items === null && <p className="empty"><i className="pending" />Recalling your memory…</p>}
+          {!loadErr && items === null && session.signedIn && <p className="empty"><i className="pending" />Recalling your memory…</p>}
+          {!session.signedIn && (
+            <>
+              <p className="empty">Your own memories are private to your wallet. Connect and sign in to see them. Below is the public proof of the project's mainnet Walrus Memory writes.</p>
+              <div className="col-h" style={{ margin: "10rem 0" }}>Public proof: {PROOF_ROWS.length} mainnet writes</div>
+              <p className="note" style={{ marginBottom: "14rem" }}>Example decisions drafted with an AI assistant, saved through the mainnet relayer. Blobs are encrypted, so only the blob id, action and amount are public; the reasons are not shown.</p>
+              {PROOF_ROWS.map((d) => (
+                <div className="mem" key={d.id}>
+                  <div><span className={`badge ${d.action === "deny" ? "deny" : ""}`}>{d.action}</span><small style={{ marginTop: "8rem" }}>{d.kind}</small></div>
+                  <div className="why-txt">{d.id}<small style={{ marginTop: "6rem" }}>{d.amount} SUI, reason encrypted</small></div>
+                  <div><span className="badge">example</span></div>
+                  <small><a href={blobUrl(d.blobId)} target="_blank" rel="noreferrer" style={{ textDecoration: "underline" }}>{d.blobId}</a></small>
+                  <span />
+                </div>
+              ))}
+            </>
+          )}
           {!loadErr && items !== null && rows.length === 0 && (
             <p className="empty">Nothing remembered yet. Deny a send on the <a href="/app" style={{ textDecoration: "underline" }}>check page</a>, or add a demo refusal.</p>
           )}

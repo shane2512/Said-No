@@ -25,7 +25,7 @@ describe("recorded run", () => {
   });
 
   it("quotes the recorded reason only once memory is in play", () => {
-    out.forEach((s) => (s.remembered ? expect(s.quote).toContain("too large") : expect(s.quote).toBeNull()));
+    out.forEach((s) => (s.remembered ? expect(s.quote?.toLowerCase()).toContain("too large") : expect(s.quote).toBeNull()));
   });
 
   it("is labelled as recorded demo data, never as the owner's real memory", () => {

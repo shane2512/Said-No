@@ -16,6 +16,8 @@ const SCENARIOS = [
   { label: "A small test send", sub: "0.01 SUI, right now", recipient: `0x${"ef".repeat(32)}`, amount: 0.01, hour: undefined },
 ];
 
+const EXAMPLE_SENDER = "0x75f0cd348b6fa757807d13f751ce05ab329fedaaae5aa67281393be00109c296";
+
 type Save = { state: "idle" } | { state: "saving"; what: string } | { state: "saved"; what: string; blobId?: string } | { state: "error"; msg: string };
 
 export default function CheckApp() {
@@ -33,6 +35,7 @@ function CheckInner() {
   const sender = account?.address;
   const [status, setStatus] = useState<Status | null>(null);
   const [recipient, setRecipient] = useState("");
+  const [guest, setGuest] = useState(EXAMPLE_SENDER);
   const [amount, setAmount] = useState("0.5");
   const [note, setNote] = useState("");
   const [hour, setHour] = useState<number | undefined>(undefined);
@@ -66,13 +69,13 @@ function CheckInner() {
     if (to && /^0x[0-9a-fA-F]{1,64}$/.test(to)) setRecipient(to);
   }, []);
 
-  async function runCheck(override?: { recipient: string; amount: number; hour?: number }) {
+  async function runCheck(override?: { recipient: string; amount: number; hour?: number }): Promise<CheckResponse | null> {
     const to = (override?.recipient ?? recipient).trim();
     const amt = override?.amount ?? Number(amount);
-    if (!/^0x[0-9a-fA-F]{1,64}$/.test(to)) return setFormErr("Enter a Sui address starting with 0x.");
-    if (!Number.isFinite(amt) || amt <= 0) return setFormErr("Enter an amount above 0.");
-    if (!sender) return setFormErr("Connect your wallet first. Checks use your own address.");
-    if (!(await session.signIn())) return setFormErr("Sign in with your wallet so your own memories can be recalled. Signing moves no funds.");
+    const from = sender ?? guest.trim();
+    if (!/^0x[0-9a-fA-F]{1,64}$/.test(to)) { setFormErr("Enter a Sui address starting with 0x."); return null; }
+    if (!Number.isFinite(amt) || amt <= 0) { setFormErr("Enter an amount above 0."); return null; }
+    if (!/^0x[0-9a-fA-F]{1,64}$/.test(from)) { setFormErr("Enter the address to check from, or connect your wallet."); return null; }
     setFormErr("");
     setBusy(true);
     setCheckErr("");
@@ -80,16 +83,23 @@ function CheckInner() {
     setDenying(false);
     try {
       const h = override ? override.hour : hour;
-      const { status: code, data } = await postJson("/api/check", { sender, recipient: to, amount: amt, hour: h ?? new Date().getHours(), network: net, note: note.trim() || undefined });
+      const { status: code, data } = await postJson("/api/check", { sender: from, recipient: to, amount: amt, hour: h ?? new Date().getHours(), network: net, note: note.trim() || undefined });
       if (code !== 200) throw new Error(data.detail ?? data.error ?? "check failed");
       setRes(data);
+      return data as CheckResponse;
     } catch {
       // Fail closed in the UI too: never show an empty result as if it were safe.
       setRes(null);
       setCheckErr("The check could not run, so treat this send as Reflection: stop and reconsider.");
+      return null;
     } finally {
       setBusy(false);
     }
+  }
+
+  /** Signing is only needed for memory: unlock it, then re-run the same check with it. */
+  async function unlock() {
+    if (sender && (await session.signIn())) runCheck();
   }
 
   function pick(s: (typeof SCENARIOS)[number]) {
@@ -100,7 +110,7 @@ function CheckInner() {
     runCheck({ recipient: s.recipient, amount: s.amount, hour: s.hour });
   }
 
-  async function decide(action: Decision["action"], text: string, k: Decision["kind"], target?: Decision) {
+  async function decide(action: Decision["action"], text: string, k: Decision["kind"], target?: Decision, feats?: CheckResponse["features"]) {
     if (!res) return;
     const { status: code, data } = await postJson("/api/decide", {
       action,
@@ -108,7 +118,7 @@ function CheckInner() {
       amount: target?.amount ?? Number(amount),
       reason: text,
       kind: k,
-      features: target?.features ?? res.features,
+      features: target?.features ?? feats ?? res.features,
       source: status?.memory === "local" ? "demo" : "real",
       target: target?.id,
     });
@@ -121,9 +131,17 @@ function CheckInner() {
   async function saveDenial(e: FormEvent) {
     e.preventDefault();
     if (!reason.trim()) return setSave({ state: "error", msg: "Type your reason. It is what gets quoted back to you." });
+    if (!sender) return setSave({ state: "error", msg: "Connect your wallet to save this refusal. Memories are kept per wallet." });
     setSave({ state: "saving", what: "your refusal" });
     try {
-      const job = await decide("deny", reason.trim(), kind);
+      if (!(await session.signIn())) throw new Error("Sign in with your wallet to save. Signing moves no funds.");
+      // A guest check read another address, so take this wallet's own features before saving.
+      let feats = res?.features;
+      if (res && res.sender !== sender) {
+        const c = await postJson("/api/check", { sender, recipient: recipient.trim(), amount: Number(amount), hour: hour ?? new Date().getHours(), network: net });
+        if (c.status === 200) feats = c.data.features;
+      }
+      const job = await decide("deny", reason.trim(), kind, undefined, feats);
       const blobId = job ? (await waitForBlob(job)) ?? undefined : undefined;
       setSave({ state: "saved", what: "Refusal remembered.", blobId });
       setDenying(false);
@@ -148,8 +166,10 @@ function CheckInner() {
   async function proceed() {
     if (!res) return;
     setSendMsg(null);
+    if (!sender) return setSendMsg({ tone: "err", text: "Connect your wallet to send. The check above did not need one." });
     setSending(true);
     try {
+      if (!(await session.signIn())) throw new Error("Sign in with your wallet first. Signing moves no funds.");
       let digest: string | undefined;
       if (status?.executeOn && sender) {
         const built = await postJson("/api/build", { sender, recipient: recipient.trim(), amount: Number(amount), acknowledged: true, hour: hour ?? new Date().getHours(), network: net });
@@ -219,6 +239,11 @@ function CheckInner() {
             <label className="fld"><span>Recipient</span>
               <input value={recipient} onChange={(e) => setRecipient(e.target.value)} placeholder="0x…" spellCheck={false} autoComplete="off" />
             </label>
+            {!sender && (
+              <label className="fld"><span>Check from (any Sui address, no wallet needed)</span>
+                <input value={guest} onChange={(e) => setGuest(e.target.value)} placeholder="0x…" spellCheck={false} autoComplete="off" />
+              </label>
+            )}
             <label className="fld"><span>Amount (SUI)</span>
               <input value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" />
             </label>
@@ -245,7 +270,7 @@ function CheckInner() {
               {LEVELS.map((l) => <div key={l.id} className={v?.level === l.id ? "on" : undefined} aria-current={v?.level === l.id ? "step" : undefined}>{l.label}</div>)}
             </div>
 
-            {!res && !checkErr && !busy && <p className="v-idle">Enter a send, or pick one on the left. Nothing is sent until you approve it.{status?.writesOn === false && <> Saving is off here, so <a href="#recorded" style={{ color: "var(--orange)", textDecoration: "underline" }}>watch the recorded run</a> to see a refusal change a decision.</>}</p>}
+            {!res && !checkErr && !busy && <p className="v-idle">Enter a send, or pick one on the left. No wallet needed to run a check, and nothing is sent until you approve it.{status?.writesOn === false && <> Saving is off here, so <a href="#recorded" style={{ color: "var(--orange)", textDecoration: "underline" }}>watch the recorded run</a> to see a refusal change a decision.</>}</p>}
             {busy && <p className="v-idle"><i className="pending" />Reading the chain through Tatum and recalling your memory…</p>}
             {checkErr && <p className="v-head warn" role="alert">{checkErr}</p>}
 
@@ -267,6 +292,12 @@ function CheckInner() {
                   <h2 className="v-head" style={{ fontWeight: 400 }}>Stop and reconsider before you send.</h2>
                 ) : (
                   <h2 className="v-head" style={{ fontWeight: 400 }}>No past refusal applies to this send.</h2>
+                )}
+                {!(session.signedIn && res.sender === sender) && (
+                  <p className="note" style={{ marginBottom: "12rem" }}>
+                    Checked without your memories{sender ? "" : `, from ${short(res.sender)}`}. The usual amount is measured from that address's own history, so with none it stays neutral.{" "}
+                    {sender ? <button className="link-btn" type="button" onClick={unlock} disabled={session.busy}>{session.busy ? "Waiting for your wallet…" : "Sign in to include yours"}</button> : "Connect a wallet to include your own memories."}
+                  </p>
                 )}
                 <ul className="v-reasons">{v.reasons.map((r) => <li key={r}>{r}</li>)}</ul>
                 {res.habits.length > 0 && <p className="v-meta" style={{ marginTop: "10rem" }}>{res.habits.join(" ")} <i>(learned from your refusals)</i></p>}
@@ -295,6 +326,7 @@ function CheckInner() {
                         <option value="hard">Hard: never send to this address</option>
                       </select>
                     </label>
+                    {!sender && <p className="note">Saving needs your wallet, because memories are kept per wallet. <ConnectButton /></p>}
                     <div className="acts">
                       <button className="cta" type="submit" disabled={save.state === "saving"}>Save my refusal</button>
                       <button className="btn" type="button" onClick={() => setDenying(false)}>Cancel</button>
