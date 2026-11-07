@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Arrow, Check, Corners, Display, Mark } from "./Display";
+import { LOGOS } from "./content";
 import { BUILT_ON, TESTS, FAQ, KEEPS, LADDER, LOG, NAV, PROOF, SCOPE, STACK, WORDS } from "./content";
 
 const Target = () => (
@@ -87,6 +88,8 @@ function CheckForm() {
   );
 }
 
+const Logo = ({ name, h }: { name: string; h?: number }) => LOGOS[name] ? <img className="lg" src={LOGOS[name]} alt={name} height={h} /> : null;
+
 export default function Landing() {
   const root = useRef<HTMLDivElement>(null);
   const [notice, setNotice] = useState<"open" | "noted" | "closed">("open");
@@ -154,9 +157,10 @@ export default function Landing() {
           <div className="hero-x" aria-hidden><XTile /></div>
           <div className="rail">
             <a href="#top" aria-label="Back to top"><Target /></a>
-            <a href="https://docs.wal.app/walrus-memory" target="_blank" rel="noreferrer" aria-label="Walrus Memory docs">WAL</a>
-            <a href="https://docs.tatum.io/reference/rpc-sui" target="_blank" rel="noreferrer" aria-label="Tatum Sui docs">TTM</a>
-            <a href="https://docs.sui.io" target="_blank" rel="noreferrer" aria-label="Sui docs">SUI</a>
+            <a href="https://docs.wal.app/walrus-memory" target="_blank" rel="noreferrer" aria-label="Walrus Memory docs"><img className="lg" src="/logos/walrus.svg" alt="Walrus" /></a>
+            <a href="https://docs.tatum.io/reference/rpc-sui" target="_blank" rel="noreferrer" aria-label="Tatum Sui docs"><img className="lg" src="/logos/tatum.svg" alt="Tatum" /></a>
+            <a href="https://docs.sui.io" target="_blank" rel="noreferrer" aria-label="Sui docs"><img className="lg" src="/logos/sui.svg" alt="Sui" /></a>
+            <a href="https://seal-docs.wal.app/" target="_blank" rel="noreferrer" aria-label="Seal docs"><img className="lg" src="/logos/seal-icon.png" alt="Seal" /></a>
             <a href="https://tatum.io/hackathon/total-recall" target="_blank" rel="noreferrer" aria-label="Total Recall hackathon">HCK</a>
           </div>
           <i className="hline" style={{ top: "188rem" }} /><i className="hline" style={{ top: "458rem" }} />
@@ -180,7 +184,7 @@ export default function Landing() {
               {BUILT_ON.map((b, i) => (
                 <div className="strip-i" key={i}>
                   <Corners />
-                  <Mark tone="currentColor" bar="currentColor" /><span>{b}</span>
+                  {LOGOS[b] ? <><Logo name={b} />{(b === "Walrus Memory" || b === "Sui") && <span>{b === "Sui" ? "Sui" : "Memory"}</span>}</> : <span>{b}</span>}
                 </div>
               ))}
             </div>
@@ -326,7 +330,7 @@ export default function Landing() {
             {STACK.map((s) => (
               <a className="scard" key={s.name} href={s.href} target="_blank" rel="noreferrer">
                 <Corners />
-                <div className="scard-n">{s.name}<Arrow /></div>
+                <div className="scard-n">{LOGOS[s.name] ? <Logo name={s.name} /> : s.name}{(s.name === "Walrus Memory" || s.name === "Sui") && <span className="scard-sub">{s.name === "Sui" ? "Sui" : "Memory"}</span>}{s.name === "Seal" && <span className="scard-sub">via Walrus Memory</span>}<Arrow /></div>
                 <p>{s.text}</p>
               </a>
             ))}
@@ -461,7 +465,7 @@ export default function Landing() {
           <div className="foot-r"><span>Nothing is sent. <a href="/app" style={{ textDecoration: "underline" }}>Full check</a></span><button className="cta" form="check" type="submit">Check it</button></div>
         </div>
         <div className="foot-links">
-          <div><h4>Built on</h4><a href="https://docs.wal.app/walrus-memory" target="_blank" rel="noreferrer">Walrus Memory</a><a href="https://docs.tatum.io/reference/rpc-sui" target="_blank" rel="noreferrer">Tatum Sui RPC</a><a href="https://docs.sui.io" target="_blank" rel="noreferrer">Sui</a></div>
+          <div><h4>Built on</h4><a href="https://docs.wal.app/walrus-memory" target="_blank" rel="noreferrer"><Logo name="Walrus Memory" /> Memory</a><a href="https://docs.tatum.io/reference/rpc-sui" target="_blank" rel="noreferrer"><Logo name="Tatum" /></a><a href="https://docs.sui.io" target="_blank" rel="noreferrer"><Logo name="Sui" /> Sui</a></div>
           <div><h4>Quick links</h4><a href="/app">Check a send</a><a href="/lab">Memory Lab</a><a href="/docs">Docs</a><a href="#faq">FAQ</a></div>
           <div><h4>Honesty</h4><span>Counted statistics, not ML</span><span>Demo data is labelled</span><span>Delegates are read/write</span></div>
           <div className="r"><h4>Hackathon</h4><a href="https://tatum.io/hackathon/total-recall" target="_blank" rel="noreferrer">Total Recall</a><span>Consumer Finance</span><span>Best Walrus Memory</span></div>

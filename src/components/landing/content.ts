@@ -12,6 +12,7 @@ export const NAV = [
   { href: "#log", label: "Build log", id: "log" },
 ];
 
+export const LOGOS: Record<string, string> = { "Walrus Memory": "/logos/walrus.svg", Tatum: "/logos/tatum.svg", Sui: "/logos/sui.svg", Seal: "/logos/seal.svg" };
 export const BUILT_ON = ["Walrus Memory", "Tatum", "Sui", "Seal", "Walrus Memory", "Tatum", "Sui", "Seal"];
 
 export const SCOPE = ["Transfers", "New recipients", "Large amounts", "Late-night sends"];

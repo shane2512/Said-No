@@ -304,3 +304,18 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .foot-top { padding-bottom: 30rem; }
   .foot-r { align-items: flex-start; }
 }
+
+/* real sponsor logos */
+.lg { display: block; width: auto; }
+.rail a .lg { max-width: 34rem; max-height: 22rem; }
+.strip-i .lg { height: 40rem; max-width: 220rem; }
+.strip-i:hover .lg { filter: brightness(0); }
+.scard-n .lg { height: 30rem; max-width: 190rem; margin-top: -2rem; }
+.scard-sub { font-size: 20rem; font-weight: 600; margin-left: -4rem; }
+.foot-links .lg { display: inline-block; height: 16rem; vertical-align: -3rem; }
+
+.scard-n img[alt="Seal"] { background: #FBFFEA; padding: 4rem 8rem; border-radius: 4rem; height: 34rem; max-width: 150rem; }
+.scard-n img[alt="Seal"] + .scard-sub { font-size: 14rem; font-weight: 500; color: var(--muted); }
+.strip-i img[alt="Seal"] { background: #FBFFEA; padding: 6rem 12rem; border-radius: 6rem; height: 56rem; max-width: 250rem; }
+.strip-i:hover img[alt="Seal"] { filter: none; }
+.rail a .lg[alt="Seal"] { border-radius: 4rem; max-width: 30rem; max-height: 30rem; }
